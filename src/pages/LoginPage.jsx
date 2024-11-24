@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { TextField, Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
+  const navigate = useNavigate();
   return (
     <div
       style={{
@@ -37,6 +39,7 @@ export default function LoginPage() {
         />
       </div>
       <Button
+        onClick={() => navigate("/main")}
         variant="contained"
         style={{ padding: "10px", backgroundColor: "#F2F2F2", color: "black" }}
       >

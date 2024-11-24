@@ -20,6 +20,7 @@ export default function CertificationPage() {
         display: "flex",
         flexDirection: "column",
         width: "100%",
+        marginTop: "120px",
       }}
     >
       <Header />
