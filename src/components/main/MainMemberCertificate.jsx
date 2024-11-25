@@ -2,17 +2,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function CertificateMember({
+export default function MainMemberCertificate({
   userName,
   totalCnt,
   curCnt,
   status,
   id,
-  date,
 }) {
   const [statusColor, setStatusColor] = useState("#BBD6FF");
   const [cnt, setCnt] = useState(curCnt);
-  const navigate = useNavigate();
 
   useEffect(() => {
     status === "none"
@@ -42,17 +40,6 @@ export default function CertificateMember({
         display: "flex",
         flexDirection: "row",
       }}
-      onClick={() => {
-        navigate(`${id}`, {
-          state: {
-            name: userName,
-            status: status,
-            id: id,
-            statusColor: statusColor,
-            date: date,
-          },
-        });
-      }}
     >
       <img
         src="src/assets/logo.png"
@@ -65,7 +52,7 @@ export default function CertificateMember({
         }}
       ></img>
       <div>
-        <div style={{ fontWeight: "bold" }}>{userName}</div>
+        <div style={{ fontWeight: "bold" }}>{"2024.11.10"}</div>
         <div>
           투표 현황 {cnt}/{totalCnt}
         </div>
@@ -83,7 +70,7 @@ export default function CertificateMember({
             }}
             onClick={(e) => {
               e.stopPropagation();
-
+              console.log("vote click");
               handleVote(e.target);
             }}
           >
@@ -99,7 +86,7 @@ export default function CertificateMember({
             }}
             onClick={(e) => {
               e.stopPropagation();
-
+              console.log("vote click");
               handleVote(e.target);
             }}
           >

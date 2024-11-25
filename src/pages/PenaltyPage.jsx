@@ -219,7 +219,10 @@ export default function PenaltyPage() {
             messages.reduce((acc, message, index) => {
               if (index === 0 || messages[index - 1].date !== message.date) {
                 acc.push(
-                  <DateDivider key={`date-${message.date}`} date={message.date} />
+                  <DateDivider
+                    key={`date-${message.date}`}
+                    date={message.date}
+                  />
                 );
               }
               acc.push(
