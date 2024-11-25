@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { TextField, Button, IconButton, Avatar } from "@mui/material";
 import Header from "../components/common/Header";
 import DefaultProfile from "../assets/profile_default.png";
 import Nav from "../components/common/Nav";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function GroupMainPage() {
   const [Profile, setProfile] = useState(DefaultProfile);
@@ -11,17 +12,30 @@ export default function GroupMainPage() {
   const [groupIntro, setGroupIntro] = useState("모임 소개문");
   const navigate = useNavigate();
 
-  const users = [
-    { id: 1, name: "user1", profilePic: DefaultProfile },
-    { id: 2, name: "user2", profilePic: DefaultProfile },
-    { id: 3, name: "user3", profilePic: DefaultProfile },
-    { id: 4, name: "user4", profilePic: DefaultProfile },
-    { id: 5, name: "user5", profilePic: DefaultProfile },
-    { id: 6, name: "user6", profilePic: DefaultProfile },
-    { id: 7, name: "user7", profilePic: DefaultProfile },
-    { id: 8, name: "user8", profilePic: DefaultProfile },
-    { id: 9, name: "user9", profilePic: DefaultProfile },
-  ];
+  //   const users = [
+  //     { id: 1, name: "user1", profilePic: DefaultProfile },
+  //     { id: 2, name: "user2", profilePic: DefaultProfile },
+  //     { id: 3, name: "user3", profilePic: DefaultProfile },
+  //     { id: 4, name: "user4", profilePic: DefaultProfile },
+  //     { id: 5, name: "user5", profilePic: DefaultProfile },
+  //     { id: 6, name: "user6", profilePic: DefaultProfile },
+  //     { id: 7, name: "user7", profilePic: DefaultProfile },
+  //     { id: 8, name: "user8", profilePic: DefaultProfile },
+  //     { id: 9, name: "user9", profilePic: DefaultProfile },
+  //   ];
+  const [users, setUsers] = useState([]);
+
+  const getUserInfo = async () => {
+    const res = await axios.get(
+      "https://nsptbxlxoj.execute-api.ap-northeast-2.amazonaws.com/dev/user/info"
+    );
+    const data = res.data;
+    setUsers([data]);
+  };
+
+  useEffect(() => {
+    getUserInfo();
+  }, []);
 
   return (
     <div
@@ -96,15 +110,15 @@ export default function GroupMainPage() {
           >
             {users.map((user) => (
               <div
-                key={user.id}
+                key={user.email}
                 style={{ textAlign: "center", width: 85, height: 100 }}
-                onClick={() => navigate(`/member/${user.id}`)}
+                onClick={() => navigate(`/member/${user.email}`)}
               >
                 <Avatar
                   src={user.profilePic}
                   style={{ width: 70, height: 70 }}
                 />
-                <p>{user.name}</p>
+                <p>{user.userName}</p>
               </div>
             ))}
           </div>

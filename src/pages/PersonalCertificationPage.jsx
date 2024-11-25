@@ -1,23 +1,45 @@
 import React from "react";
 import profileImg from "/src/assets/logo.png";
 import Header from "../components/common/Header";
+import Nav from "../components/common/Nav";
 import { useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function PersonalCertificationPage() {
   const location = useLocation();
   const { name, id, status, statusColor } = location.state;
   console.log(name, id, status);
+  const [certification, setCertification] = useState([]);
+  useEffect(() => {
+    getCertification();
+  }, []);
+  const getCertification = async () => {
+    const res = await axios.get(
+      `https://nsptbxlxoj.execute-api.ap-northeast-2.amazonaws.com/dev/verification/${1}`
+    );
+    const data = res.data.verifications;
+    console.log("dddddd", data);
+    setCertification([...data]);
+  };
   return (
-    <>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        width: "100%",
+        marginTop: "120px",
+        alignItems: "center",
+      }}
+    >
       <Header />
-
+      <Nav />
       <div
         style={{
           display: "flex",
           width: "90%",
           gap: "10px",
           margin: "0px",
-          marginTop: "80px",
         }}
       >
         <img
@@ -28,10 +50,11 @@ export default function PersonalCertificationPage() {
             height: "50px",
             borderRadius: "50px",
             backgroundColor: "#D9D9D9",
+            margin: 0,
           }}
         />
-        <div>
-          <div>{name}</div>
+        <div style={{ margin: 0 }}>
+          <div style={{ fontWeight: "bold" }}>{name}</div>
           <div>2024.08.20</div>
         </div>
       </div>
@@ -42,9 +65,15 @@ export default function PersonalCertificationPage() {
           width: "90%",
           backgroundColor: `${statusColor}`,
           borderRadius: "20px",
+          display: "flex",
         }}
-      ></div>
-      <div></div>
-    </>
+      >
+        <img
+          src={certification[0]?.certificationImage}
+          alt="이미지"
+          style={{ width: "100%" }}
+        ></img>
+      </div>
+    </div>
   );
 }

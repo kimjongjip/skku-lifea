@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function CertificateMember({
+export default function MainMemberCertificate({
   userName,
   totalCnt,
   curCnt,
@@ -63,7 +63,7 @@ export default function CertificateMember({
         }}
       ></img>
       <div>
-        <div style={{ fontWeight: "bold" }}>{userName}</div>
+        <div style={{ fontWeight: "bold" }}>{"2024.11.10"}</div>
         <div>
           투표 현황 {cnt}/{totalCnt}
         </div>
