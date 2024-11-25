@@ -10,6 +10,7 @@ import GroupMainPage from "../pages/GroupMainPage";
 import PenaltyPage from "../pages/PenaltyPage";
 import GroupMemberPage from "../pages/GroupMemberPage";
 
+
 const router = createBrowserRouter([
   {
     path: "/",
