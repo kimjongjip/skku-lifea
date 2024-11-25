@@ -24,7 +24,6 @@ export default function CertificationPage() {
       `https://nsptbxlxoj.execute-api.ap-northeast-2.amazonaws.com/dev/verification/${1}`
     );
     const data = res.data.verifications;
-    console.log(data);
     setCertification([...data]);
   };
 
@@ -47,12 +46,15 @@ export default function CertificationPage() {
           gap: "10px",
         }}
       >
-        <div style={{ marginRight: "75%", fontWeight: "bold" }}>2024.8.20</div>
+        <div style={{ fontWeight: "bold", width: "90%" }}>
+          {certification[0]?.certificationDate.slice(0, 10)}
+        </div>
         <CertificateBtn />
         {certification.map((data) => (
           <CertificateMember
             key={data.id}
             id={data.id}
+            date={data.certificationDate.slice(0, 10)}
             userName={data.userName}
             totalCnt={data.totalCnt}
             curCnt={data.noNumber + data.yesNumber}

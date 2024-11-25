@@ -8,6 +8,7 @@ export default function CertificateMember({
   curCnt,
   status,
   id,
+  date,
 }) {
   const [statusColor, setStatusColor] = useState("#BBD6FF");
   const [cnt, setCnt] = useState(curCnt);
@@ -48,6 +49,7 @@ export default function CertificateMember({
             status: status,
             id: id,
             statusColor: statusColor,
+            date: date,
           },
         });
       }}
@@ -81,7 +83,7 @@ export default function CertificateMember({
             }}
             onClick={(e) => {
               e.stopPropagation();
-              console.log("vote click");
+
               handleVote(e.target);
             }}
           >
@@ -97,7 +99,7 @@ export default function CertificateMember({
             }}
             onClick={(e) => {
               e.stopPropagation();
-              console.log("vote click");
+
               handleVote(e.target);
             }}
           >

@@ -8,9 +8,10 @@ import axios from "axios";
 
 export default function PersonalCertificationPage() {
   const location = useLocation();
-  const { name, id, status, statusColor } = location.state;
-  console.log(name, id, status);
+  const { name, id, status, statusColor, date } = location.state;
+
   const [certification, setCertification] = useState([]);
+  const [processedData, setProcessedData] = useState([]);
   useEffect(() => {
     getCertification();
   }, []);
@@ -19,9 +20,18 @@ export default function PersonalCertificationPage() {
       `https://nsptbxlxoj.execute-api.ap-northeast-2.amazonaws.com/dev/verification/${1}`
     );
     const data = res.data.verifications;
-    console.log("dddddd", data);
+
     setCertification([...data]);
   };
+
+  useEffect(() => {
+    const data = certification.filter((item) => {
+      return (
+        item.userName === name && item.certificationDate.slice(0, 10) === date
+      );
+    });
+    setProcessedData(data);
+  }, [certification]);
   return (
     <div
       style={{
@@ -55,7 +65,7 @@ export default function PersonalCertificationPage() {
         />
         <div style={{ margin: 0 }}>
           <div style={{ fontWeight: "bold" }}>{name}</div>
-          <div>2024.08.20</div>
+          <div>{date}</div>
         </div>
       </div>
       <div
@@ -69,7 +79,7 @@ export default function PersonalCertificationPage() {
         }}
       >
         <img
-          src={certification[0]?.certificationImage}
+          src={processedData[0]?.certificationImage}
           alt="이미지"
           style={{ width: "100%" }}
         ></img>

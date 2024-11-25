@@ -11,7 +11,6 @@ export default function MainMemberCertificate({
 }) {
   const [statusColor, setStatusColor] = useState("#BBD6FF");
   const [cnt, setCnt] = useState(curCnt);
-  const navigate = useNavigate();
 
   useEffect(() => {
     status === "none"
@@ -40,16 +39,6 @@ export default function MainMemberCertificate({
         borderRadius: "20px",
         display: "flex",
         flexDirection: "row",
-      }}
-      onClick={() => {
-        navigate(`${id}`, {
-          state: {
-            name: userName,
-            status: status,
-            id: id,
-            statusColor: statusColor,
-          },
-        });
       }}
     >
       <img

@@ -5,9 +5,11 @@ import DefaultProfile from "../assets/profile_default.png";
 import Nav from "../components/common/Nav";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import Chart from "../components/main/chart";
 
 export default function GroupMainPage() {
   const [Profile, setProfile] = useState(DefaultProfile);
+  const [statistics, setStatistics] = useState([]);
   const [groupName, setGroupName] = useState("모임 이름");
   const [groupIntro, setGroupIntro] = useState("모임 소개문");
   const navigate = useNavigate();
@@ -32,9 +34,17 @@ export default function GroupMainPage() {
     const data = res.data;
     setUsers([data]);
   };
-
+  const classId = 1;
+  const getClassStatistics = async () => {
+    const res = await axios.get(
+      `https://nsptbxlxoj.execute-api.ap-northeast-2.amazonaws.com/dev/class/${classId}/statistics`
+    );
+    const data = res.data.date;
+    setStatistics(data);
+  };
   useEffect(() => {
     getUserInfo();
+    getClassStatistics();
   }, []);
 
   return (
@@ -83,17 +93,16 @@ export default function GroupMainPage() {
             <p style={{ margin: "0" }}>{groupIntro}</p>
           </div>
         </div>
-        {/* 통계 부분 */}
+        {/* 통계 부분    */}
         <div style={{ width: "100%" }}>
-          <h3 style={{ marginBottom: "5px" }}>통계치</h3>
+          {/* <h3 style={{ marginBottom: "5px" }}>통계치</h3> */}
           <div
             style={{
-              backgroundColor: "#F0F0F0",
-              padding: "100px",
+              backgroundColor: "white",
               textAlign: "center",
             }}
           >
-            <p>통계치 부분</p>
+            <Chart data={statistics} />
           </div>
         </div>
 
