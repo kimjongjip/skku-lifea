@@ -1,0 +1,3 @@
+[submodule "public/html"]
+	path = public/html
+	url = https://github.com/chrimp/skkulife.git
