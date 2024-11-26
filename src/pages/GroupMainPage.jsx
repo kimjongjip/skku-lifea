@@ -14,18 +14,8 @@ export default function GroupMainPage() {
   const [groupIntro, setGroupIntro] = useState("모임 소개문");
   const navigate = useNavigate();
 
-  //   const users = [
-  //     { id: 1, name: "user1", profilePic: DefaultProfile },
-  //     { id: 2, name: "user2", profilePic: DefaultProfile },
-  //     { id: 3, name: "user3", profilePic: DefaultProfile },
-  //     { id: 4, name: "user4", profilePic: DefaultProfile },
-  //     { id: 5, name: "user5", profilePic: DefaultProfile },
-  //     { id: 6, name: "user6", profilePic: DefaultProfile },
-  //     { id: 7, name: "user7", profilePic: DefaultProfile },
-  //     { id: 8, name: "user8", profilePic: DefaultProfile },
-  //     { id: 9, name: "user9", profilePic: DefaultProfile },
-  //   ];
   const [users, setUsers] = useState([]);
+  const [classInfo, setClassInfo] = useState();
 
   const getUserInfo = async () => {
     const res = await axios.get(
@@ -35,11 +25,19 @@ export default function GroupMainPage() {
     setUsers([data]);
   };
   const classId = 1;
+
+  const getClassInfo = async () => {
+    const res = await axios.get(
+      `https://nsptbxlxoj.execute-api.ap-northeast-2.amazonaws.com/dev/class/${users.email}}/`
+    );
+    const data = await res.data;
+    setClassInfo(data);
+  };
   const getClassStatistics = async () => {
     const res = await axios.get(
       `https://nsptbxlxoj.execute-api.ap-northeast-2.amazonaws.com/dev/class/${classId}/statistics`
     );
-    const data = res.data.date;
+    const data = res.data.chart;
     setStatistics(data);
   };
   useEffect(() => {
@@ -47,6 +45,9 @@ export default function GroupMainPage() {
     getClassStatistics();
   }, []);
 
+  useEffect(() => {
+    getClassInfo();
+  }, [users]);
   return (
     <div
       style={{
