@@ -21,22 +21,34 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 20
 
       # Install dependencies
       - name: Install dependencies
         run: npm install
+
+      # Install Headless Chrome
+      - name: Install Chrome
+        run: sudo apt-get install -y chromium-browser
+
+      # Set Chrome path environment variable
+      - name: Set CHROME_PATH
+        run: echo "CHROME_PATH=/usr/bin/chromium-browser" >> $GITHUB_ENV
 
       # Run tests with coverage
       - name: Run tests and generate coverage
         run: npm run test:coverage
 
       # Upload coverage to Codecov
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}  # GitHub Secrets에서 토큰 가져오기
-          files: ./coverage/lcov-report/lcov-report.html  # Codecov에 업로드할 커버리지 리포트 파일 경로
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info  # Ensure this path is correct
           flags: unittests
           name: node-coverage-report
-          fail_ci_if_error: true  # 업로드 실패 시 CI 실패로 처리
+          fail_ci_if_error: true 
+
+  
+        
+  

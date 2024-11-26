@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
 import Header from "../components/common/Header";
 import Nav from "../components/common/Nav";
+import { useLocation } from "react-router-dom";
 
 export default function PenaltyPage() {
   const [messages, setMessages] = useState([]);
   const [error, setError] = useState(false);
+
+  // location을 사용하여 라우트 변경 감지
+  const location = useLocation();
 
   // 메시지 가져오기
   const fetchMessages = async () => {
@@ -14,32 +18,71 @@ export default function PenaltyPage() {
       );
       const data = await response.json();
 
-      // API 응답 형식을 기존 메시지 형식으로 변환
-      const formattedMessages = data.penaltyLogs.map((log) => {
+      // 로그가 비어있을 경우 오늘 날짜로 'nopenalty' 메시지 생성
+      if (!data.penaltyLogs || data.penaltyLogs.length === 0) {
+        const today = new Date();
+        setMessages([{
+          date: formatDate(today),
+          time: "00:00",
+          content: "모두가 인증을 완료했습니다",
+          type: "nopenalty",
+          timestamp: today.getTime(),
+        }]);
+        setError(false);
+        return;
+      }
+
+      // API 응답을 날짜별로 그룹화
+      const messagesByDate = {};
+      data.penaltyLogs.forEach((log) => {
         const date = new Date(log.alaramDate);
-        return {
-          date: formatDate(date),
+        const dateStr = formatDate(date);
+        
+        if (!messagesByDate[dateStr]) {
+          messagesByDate[dateStr] = [];
+        }
+        
+        messagesByDate[dateStr].push({
+          date: dateStr,
           time: `${String(date.getHours()).padStart(2, "0")}:${String(
             date.getMinutes()
           ).padStart(2, "0")}`,
           content: log.alarmMessage,
           type: log.alarmType,
           timestamp: date.getTime(),
-        };
+        });
       });
 
+      // 각 날짜에 대해 벌칙이 없으면 'nopenalty' 메시지 추가
+      const formattedMessages = [];
+      Object.entries(messagesByDate).forEach(([date, messages]) => {
+        if (messages.every(msg => msg.type !== 'penalty')) {
+          formattedMessages.push({
+            date,
+            time: "00:00",
+            content: "모두가 인증을 완료했습니다",
+            type: "nopenalty",
+            timestamp: new Date(date).getTime(),
+          });
+        }
+        formattedMessages.push(...messages);
+      });
+
+      // 타임스탬프로 정렬
+      formattedMessages.sort((a, b) => b.timestamp - a.timestamp);
+
       setMessages(formattedMessages);
-      setError(false); // 성공적으로 데이터를 가져왔으므로 에러 상태 초기화
+      setError(false);
     } catch (error) {
       console.error("메시지 가져오기 실패:", error);
-      setError(true); // 에러 발생 시 상태 업데이트
+      setError(true);
     }
   };
 
-  // 컴포넌트 마운트 시 메시지 가져오기
+  // useEffect의 의존성 배열에 location 추가
   useEffect(() => {
     fetchMessages();
-  }, []);
+  }, [location]);
 
   // 날짜 포맷팅 함수
   const formatDate = (date) => {
@@ -75,11 +118,6 @@ export default function PenaltyPage() {
           padding: "20px",
           margin: "15px 0",
           fontSize: "18px",
-        };
-      default:
-        return {
-          ...baseStyle,
-          backgroundColor: "#F0F0F0",
         };
     }
   };
@@ -142,39 +180,6 @@ export default function PenaltyPage() {
     >
       <Header />
       <Nav />
-
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          gap: "10px",
-          padding: "10px",
-          backgroundColor: "#f5f5f5",
-        }}
-      >
-        <button
-          style={{
-            padding: "5px 10px",
-            backgroundColor: "#FFE5E5",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
-        >
-          벌칙 메시지 추가
-        </button>
-        <button
-          style={{
-            padding: "5px 10px",
-            backgroundColor: "#E5FFE5",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
-        >
-          목표달성 메시지 추가
-        </button>
-      </div>
 
       <div
         style={{
