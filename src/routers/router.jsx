@@ -1,6 +1,5 @@
 // Router: 각 URL에 따른 page 컴포넌트 연결
 import { createBrowserRouter } from "react-router-dom";
-
 import LoginPage from "../pages/LoginPage";
 import SignupPage from "../pages/SignupPage";
 import HtmlLoader from "../components/common/HtmlLoader";
@@ -10,16 +9,15 @@ import GroupMainPage from "../pages/GroupMainPage";
 import PenaltyPage from "../pages/PenaltyPage";
 import GroupMemberPage from "../pages/GroupMemberPage";
 
-
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <LoginPage />,
+    element: <HtmlLoader file="/html/templates/login.html" />,
     index: true,
   },
   {
     path: "/signup",
-    element: <SignupPage />,
+    element: <HtmlLoader file="/html/templates/signup.html" />,
     index: true,
   },
   {
@@ -34,11 +32,13 @@ const router = createBrowserRouter([
   {
     path: "/penalty",
     element: <PenaltyPage />,
+    index: true,
     // index: true,
   },
   {
     path: "/main",
     element: <GroupMainPage />,
+    index: true,
     // index: true,
   },
   {
