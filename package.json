@@ -17,7 +17,7 @@
     "@mui/lab": "^6.0.0-beta.14",
     "@mui/material": "^6.1.5",
     "apexcharts": "^4.1.0",
-    "axios": "^1.7.7",
+    "axios": "^1.7.8",
     "localforage": "^1.10.0",
     "match-sorter": "^7.0.0",
     "react": "^18.3.1",
