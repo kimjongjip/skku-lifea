@@ -14,9 +14,9 @@ class ResizeObserver {
 global.ResizeObserver = ResizeObserver;
 window.ResizeObserver = ResizeObserver;
 
+// Mock useNavigate
 const navigate = vi.fn();
 
-// Ensure the alias is correctly resolved
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual("react-router-dom");
   return {
@@ -25,30 +25,32 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
+// Mock axios
 vi.mock("axios");
 
-// Update the path to match the exact casing
-vi.mock("@/components/main/chart", () => ({
+// Corrected Chart Mock Path with Exact Casing
+vi.mock("@/components/main/Chart", () => ({
   default: () => <div data-testid="chart-component">Chart Component</div>,
 }));
 
+// Import the component after mocks
 import GroupMainPage from "@/pages/GroupMainPage";
 
-// Mock getBBox if necessary
-beforeAll(() => {
-  SVGElement.prototype.getBBox = () => ({
-    x: 0,
-    y: 0,
-    width: 0,
-    height: 0,
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-  });
-});
-
 describe("GroupMainPage", () => {
+  beforeAll(() => {
+    // Mock getBBox to prevent errors from apexcharts
+    SVGElement.prototype.getBBox = () => ({
+      x: 0,
+      y: 0,
+      width: 0,
+      height: 0,
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+    });
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -88,8 +90,8 @@ describe("GroupMainPage", () => {
     };
 
     axios.get
-      .mockResolvedValueOnce({ data: mockUserInfo })
-      .mockResolvedValueOnce({ data: mockStatistics });
+      .mockResolvedValueOnce({ data: mockUserInfo }) // First API call
+      .mockResolvedValueOnce({ data: mockStatistics }); // Second API call
 
     render(
       <MemoryRouter>
@@ -97,10 +99,12 @@ describe("GroupMainPage", () => {
       </MemoryRouter>
     );
 
+    // Wait for loading to finish
     await waitFor(() => {
       expect(screen.queryByText("로딩 중...")).not.toBeInTheDocument();
     });
 
+    // Assertions
     expect(screen.getByText("모임 이름")).toBeInTheDocument();
     expect(screen.getByText("모임 소개문")).toBeInTheDocument();
     expect(screen.getByText("User1")).toBeInTheDocument();
@@ -118,8 +122,10 @@ describe("GroupMainPage", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("기본 모임 이름")).toBeInTheDocument();
+      expect(screen.queryByText("로딩 중...")).not.toBeInTheDocument();
     });
+
+    expect(screen.getByText("기본 모임 이름")).toBeInTheDocument();
   });
 
   it("모임원을 클릭하면 상세 페이지로 이동한다", async () => {
@@ -141,8 +147,8 @@ describe("GroupMainPage", () => {
     };
 
     axios.get
-      .mockResolvedValueOnce({ data: mockUserInfo })
-      .mockResolvedValueOnce({ data: { chart: [] } });
+      .mockResolvedValueOnce({ data: mockUserInfo }) // First API call
+      .mockResolvedValueOnce({ data: { chart: [] } }); // Second API call
 
     render(
       <MemoryRouter>
@@ -151,7 +157,7 @@ describe("GroupMainPage", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("User1")).toBeInTheDocument();
+      expect(screen.queryByText("로딩 중...")).not.toBeInTheDocument();
     });
 
     fireEvent.click(screen.getByText("User1"));
