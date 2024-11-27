@@ -4,9 +4,19 @@ import { vi } from "vitest";
 import "@testing-library/jest-dom";
 import axios from "axios";
 
+// ResizeObserver Mock
+class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+
+global.ResizeObserver = ResizeObserver;
+window.ResizeObserver = ResizeObserver;
+
 const navigate = vi.fn();
 
-// react-router-dom 모킹
+// Ensure the alias is correctly resolved
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual("react-router-dom");
   return {
@@ -15,21 +25,35 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
-// axios 모킹
 vi.mock("axios");
 
-// Chart 컴포넌트를 완전히 모킹
+// Update the path to match the exact casing
 vi.mock("@/components/main/chart", () => ({
-  __esModule: true,
-  default: () => {
-    return <div>통계 데이터</div>;
-  },
+  default: () => <div data-testid="chart-component">Chart Component</div>,
 }));
 
 import GroupMainPage from "@/pages/GroupMainPage";
 
+// Mock getBBox if necessary
+beforeAll(() => {
+  SVGElement.prototype.getBBox = () => ({
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+  });
+});
+
 describe("GroupMainPage", () => {
   beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
     vi.clearAllMocks();
   });
 
@@ -74,12 +98,14 @@ describe("GroupMainPage", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("모임 이름")).toBeInTheDocument();
-      expect(screen.getByText("모임 소개문")).toBeInTheDocument();
-      expect(screen.getByText("User1")).toBeInTheDocument();
-      expect(screen.getByText("User2")).toBeInTheDocument();
-      expect(screen.getByText("통계 데이터")).toBeInTheDocument();
+      expect(screen.queryByText("로딩 중...")).not.toBeInTheDocument();
     });
+
+    expect(screen.getByText("모임 이름")).toBeInTheDocument();
+    expect(screen.getByText("모임 소개문")).toBeInTheDocument();
+    expect(screen.getByText("User1")).toBeInTheDocument();
+    expect(screen.getByText("User2")).toBeInTheDocument();
+    expect(screen.getByTestId("chart-component")).toBeInTheDocument();
   });
 
   it("API 호출 실패 시 오류를 처리한다", async () => {
