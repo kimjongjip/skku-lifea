@@ -81,7 +81,7 @@ export default function CertificateBtn() {
             }}
             onClick={handleUpload}
           >
-            + 인증하기
+            <h1>+ 인증하기</h1>
           </button>
         </div>
       ) : (

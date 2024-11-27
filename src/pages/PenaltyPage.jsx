@@ -101,7 +101,7 @@ export default function PenaltyPage() {
   const getMessageStyle = (type) => {
     const baseStyle = {
       padding: "10px",
-      borderRadius: "8px",
+      borderRadius: "20px",
       marginBottom: "10px",
     };
 

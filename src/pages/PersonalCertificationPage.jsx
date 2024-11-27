@@ -5,6 +5,7 @@ import Nav from "../components/common/Nav";
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { Avatar } from "@mui/material";
 
 export default function PersonalCertificationPage() {
   const location = useLocation();
@@ -38,51 +39,68 @@ export default function PersonalCertificationPage() {
         display: "flex",
         flexDirection: "column",
         width: "100%",
+        margin: "0",
         marginTop: "120px",
-        alignItems: "center",
+        //alignItems: "center",
+        gap: "10px"
       }}
     >
-      <Header />
-      <Nav />
+      <div style={{ margin: "0" }}>
+        <Header />
+        <Nav />
+      </div>
       <div
         style={{
           display: "flex",
-          width: "90%",
+          flexDirection: "column",
           gap: "10px",
-          margin: "0px",
+          margin: "0px 10px",
         }}
       >
-        <img
+        <div
+        
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          width: "100%",
+          gap: "10px",
+          margin: "0px"
+        }}>
+        <Avatar
           src={profileImg}
           alt="user"
           style={{
-            width: "50px",
-            height: "50px",
-            borderRadius: "50px",
+            width: "70px",
+            height: "70px",
             backgroundColor: "#D9D9D9",
             margin: 0,
           }}
         />
-        <div style={{ margin: 0 }}>
-          <div style={{ fontWeight: "bold" }}>{name}</div>
+        <div style={{ display: "flex",
+                  flexDirection: "column",
+                  gap: "5px",
+                  margin: "auto 0", }}>
+          <div style={{ fontWeight: "bold", margin: "0px" }}>{name}</div>
           <div>{date}</div>
         </div>
-      </div>
-      <div
+        </div>
+        <div
         style={{
-          marginTop: "20px",
-          height: "60vh",
-          width: "90%",
+          width: "auto",
           backgroundColor: `${statusColor}`,
           borderRadius: "20px",
           display: "flex",
+          padding: "20px",
+          overflow: "hidden",
         }}
       >
         <img
           src={img}
           alt="이미지"
-          style={{ width: "90%", height: "90%" }}
+          style={{ maxHeight: "500px", width: "100%", objectFit: "cover", borderRadius: "20px"
+           }}
         ></img>
+      </div>
       </div>
     </div>
   );

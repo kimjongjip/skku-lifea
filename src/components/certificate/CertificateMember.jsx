@@ -43,6 +43,9 @@ export default function CertificateMember({
         borderRadius: "20px",
         display: "flex",
         flexDirection: "row",
+        gap: "10px",
+        padding: "20px",
+        justifyContent: "flex-start"
       }}
       onClick={() => {
         navigate(`${id}`, {
@@ -64,6 +67,7 @@ export default function CertificateMember({
           width: "80px",
           height: "80px",
           backgroundColor: "#D9D9D9",
+          margin: "0px"
         }}
       ></Avatar>
       <div>

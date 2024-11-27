@@ -7,17 +7,17 @@ import zIndex from "@mui/material/styles/zIndex";
 export default function Nav() {
   const location = useLocation();
   const [value, setValue] = useState(() => {
-    switch (location.pathname) {
-      case "/main":
-        return "1";
-      case "/certificate":
-        return "2";
-      case "/penalty":
-        return "3";
-      case "/management":
-        return "4";
-      default:
-        return "1";
+    
+    if (location.pathname.startsWith('/main')){
+      return '1';
+    } else if (location.pathname.startsWith('/certificate')) {
+      return '2';
+    } else if (location.pathname.startsWith('/penalty')) {
+      return '3';
+    } else if (location.pathname.startsWith('/management')) {
+      return '4';
+    } else {
+      return '1';
     }
   });
 
