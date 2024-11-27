@@ -40,18 +40,14 @@ export default function CertificateBtn() {
     }
     const formData = new FormData();
     formData.append("verification", imageFile);
-    // for (const [key, value] of formData.entries()) {
-    //   console.log(`${key}:`, value);
-    // }
     try {
       const response = await axios.post(
         "https://nsptbxlxoj.execute-api.ap-northeast-2.amazonaws.com/dev/verification/upload",
-        formData,
+        { classId: classId, verification: formData },
         {
           headers: {
             Authorization:
               "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjaGxla2RsZjEyMzRAZ21haWwuY29tIiwiaWF0IjoxNzMyNjA1OTU5LCJleHAiOjE3NjQxNDE5NTl9.86LBbz7DGZGGlLrJVwNwZmroV6XB_m-BqkPtcbm_z8k",
-
             accept: "application/json",
             "Content-Type": "multipart/form-data",
           },

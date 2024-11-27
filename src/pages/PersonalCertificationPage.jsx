@@ -8,7 +8,7 @@ import axios from "axios";
 
 export default function PersonalCertificationPage() {
   const location = useLocation();
-  const { name, id, status, statusColor, date } = location.state;
+  const { name, id, img, statusColor, date } = location.state;
 
   const [certification, setCertification] = useState([]);
   const [processedData, setProcessedData] = useState([]);
@@ -79,9 +79,9 @@ export default function PersonalCertificationPage() {
         }}
       >
         <img
-          src={processedData[0]?.certificationImage}
+          src={img}
           alt="이미지"
-          style={{ width: "100%" }}
+          style={{ width: "90%", height: "90%" }}
         ></img>
       </div>
     </div>
