@@ -5,7 +5,7 @@ import DefaultProfile from "../assets/profile_default.png";
 import Nav from "../components/common/Nav";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import Chart from "@/components/main/chart";
+import Chart from "@/components/main/Chart";
 
 export default function GroupMainPage() {
   const [Profile, setProfile] = useState(DefaultProfile);
