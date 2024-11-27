@@ -16,11 +16,6 @@ const router = createBrowserRouter([
     index: true,
   },
   {
-    path: "/signup",
-    element: <HtmlLoader file="/html/templates/signup.html" />,
-    index: true,
-  },
-  {
     path: "/certificate",
     element: <CertificationPage />,
     index: true,
@@ -45,6 +40,10 @@ const router = createBrowserRouter([
     path: "/member/:id",
     element: <GroupMemberPage />,
     // index: true,
+  },
+  {
+    path: "*",
+    element: <HtmlLoader file={`/html/templates${window.location.pathname}.html`}/>,
   },
 ]);
 
