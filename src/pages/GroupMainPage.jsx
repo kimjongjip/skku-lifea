@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { TextField, Button, IconButton, Avatar } from "@mui/material";
+import { Avatar } from "@mui/material";
 import Header from "../components/common/Header";
 import DefaultProfile from "../assets/profile_default.png";
 import Nav from "../components/common/Nav";
@@ -13,60 +13,66 @@ export default function GroupMainPage() {
   const [groupName, setGroupName] = useState("모임 이름");
   const [groupIntro, setGroupIntro] = useState("모임 소개문");
   const navigate = useNavigate();
+  const [users, setUsers] = useState({
+    userClass: [
+      {
+        classImage: DefaultProfile,
+        className: "기본 모임 이름",
+        classDescription: "기본 모임 설명",
+        classMember: [],
+      },
+    ],
+  });
 
-  const [users, setUsers] = useState([]);
-  const [classInfo, setClassInfo] = useState();
+  const [loading, setLoading] = useState(true);
 
   const getUserInfo = async () => {
-    const res = await axios.get(
-      "https://nsptbxlxoj.execute-api.ap-northeast-2.amazonaws.com/dev/user/info",
-      {
-        headers: {
-          Authorization:
-            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjaGxla2RsZjEyMzRAZ21haWwuY29tIiwiaWF0IjoxNzMyNjA1OTU5LCJleHAiOjE3NjQxNDE5NTl9.86LBbz7DGZGGlLrJVwNwZmroV6XB_m-BqkPtcbm_z8k",
-        },
-      }
-    );
-    setUsers([res.data]);
+    try {
+      const res = await axios.get(
+        "https://nsptbxlxoj.execute-api.ap-northeast-2.amazonaws.com/dev/user/info",
+        {
+          headers: {
+            Authorization:
+              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjaGxla2RsZjEyMzRAZ21haWwuY29tIiwiaWF0IjoxNzMyNjA1OTU5LCJleHAiOjE3NjQxNDE5NTl9.86LBbz7DGZGGlLrJVwNwZmroV6XB_m-BqkPtcbm_z8k",
+          },
+        }
+      );
+      setUsers(res.data);
+      console.log("users", res.data.userClass[0].classMember);
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const classId = 1;
 
-  // const getClassInfo = async () => {
-  //   const res = await axios.get(
-  //     `https://nsptbxlxoj.execute-api.ap-northeast-2.amazonaws.com/dev/class/${classId}`,
-  //     {
-  //       headers: {
-  //         Authorization:
-  //           "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjaGxla2RsZjEyMzRAZ21haWwuY29tIiwiaWF0IjoxNzMyNjA1OTU5LCJleHAiOjE3NjQxNDE5NTl9.86LBbz7DGZGGlLrJVwNwZmroV6XB_m-BqkPtcbm_z8k",
-  //       },
-  //     }
-  //   );
-  //   const data = await res.data;
-  //   // setClassInfo(data);
-  // };
   const getClassStatistics = async () => {
-    const res = await axios.get(
-      `https://nsptbxlxoj.execute-api.ap-northeast-2.amazonaws.com/dev/class/${classId}/statistics`,
-      {
-        headers: {
-          Authorization:
-            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjaGxla2RsZjEyMzRAZ21haWwuY29tIiwiaWF0IjoxNzMyNjA1OTU5LCJleHAiOjE3NjQxNDE5NTl9.86LBbz7DGZGGlLrJVwNwZmroV6XB_m-BqkPtcbm_z8k",
-        },
-      }
-    );
-    const data = res.data.chart;
-    setStatistics(data);
+    try {
+      const res = await axios.get(
+        `https://nsptbxlxoj.execute-api.ap-northeast-2.amazonaws.com/dev/class/${classId}/statistics`,
+        {
+          headers: {
+            Authorization:
+              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjaGxla2RsZjEyMzRAZ21haWwuY29tIiwiaWF0IjoxNzMyNjA1OTU5LCJleHAiOjE3NjQxNDE5NTl9.86LBbz7DGZGGlLrJVwNwZmroV6XB_m-BqkPtcbm_z8k",
+          },
+        }
+      );
+      setStatistics(res.data.chart);
+    } catch (error) {
+      console.error("Error fetching statistics:", error);
+    }
   };
+
   useEffect(() => {
-    getUserInfo();
-    getClassStatistics();
-    console.log("실행");
+    const fetchData = async () => {
+      await getUserInfo();
+      await getClassStatistics();
+    };
+    fetchData();
   }, []);
 
-  // useEffect(() => {
-  //   getClassInfo();
-  // }, [users]);
   return (
     <div
       style={{
@@ -90,70 +96,83 @@ export default function GroupMainPage() {
           margin: "0 10px",
         }}
       >
-        {/* 모임 정보 */}
-        <div style={{ display: "flex", margin: "0", width: "100%" }}>
-          <Avatar
-            src={users[0]?.userClass[0]?.classImage}
-            style={{
-              width: 80,
-              height: 80,
-              marginRight: "20px",
-              marginLeft: "0",
-            }}
-          />
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "5px",
-              margin: "auto 0",
-            }}
-          >
-            <h3 style={{ margin: "0" }}>{users[0]?.userClass[0]?.className}</h3>
-            <p style={{ margin: "0" }}>
-              {users[0]?.userClass[0]?.classDescription}
-            </p>
-          </div>
-        </div>
-        {/* 통계 부분    */}
-        <div style={{ width: "100%" }}>
-          {/* <h3 style={{ marginBottom: "5px" }}>통계치</h3> */}
-          <div
-            style={{
-              backgroundColor: "white",
-              textAlign: "center",
-            }}
-          >
-            <Chart data={statistics} />
-          </div>
-        </div>
-
-        {/* 모임원 리스트 */}
-        <div style={{ width: "100%" }}>
-          <h3 style={{ marginBottom: "5px" }}>모임원</h3>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(85px, 1fr))",
-              rowGap: "15px",
-              columnGap: "5px",
-            }}
-          >
-            {users[0]?.userClass[0]?.classMember.map((user) => (
+        {/* 로딩 상태 처리 */}
+        {loading ? (
+          <p>로딩 중...</p>
+        ) : (
+          <>
+            {/* 모임 정보 */}
+            <div style={{ display: "flex", margin: "0", width: "100%" }}>
+              <Avatar
+                src={users?.userClass[0]?.classImage || DefaultProfile}
+                style={{
+                  width: 80,
+                  height: 80,
+                  marginRight: "20px",
+                  marginLeft: "0",
+                }}
+              />
               <div
-                key={user.email}
-                style={{ textAlign: "center", width: 85, height: 100 }}
-                onClick={() => navigate(`/member/${user.email}`)}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "5px",
+                  margin: "auto 0",
+                }}
               >
-                <Avatar
-                  src={user.profilePic}
-                  style={{ width: 70, height: 70 }}
-                />
-                <p>{user.userName}</p>
+                <h3 style={{ margin: "0" }}>
+                  {users?.userClass[0]?.className}
+                </h3>
+                <p style={{ margin: "0" }}>
+                  {users?.userClass[0]?.classDescription}
+                </p>
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
+
+            {/* 통계 부분 */}
+            <div style={{ width: "100%" }}>
+              <div
+                style={{
+                  backgroundColor: "white",
+                  textAlign: "center",
+                }}
+              >
+                <Chart data={statistics} />
+              </div>
+            </div>
+
+            {/* 모임원 리스트 */}
+            <div style={{ width: "100%" }}>
+              <h3 style={{ marginBottom: "5px" }}>모임원</h3>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(85px, 1fr))",
+                  rowGap: "15px",
+                  columnGap: "5px",
+                }}
+              >
+                {users?.userClass[0]?.classMember?.map((user) => (
+                  <div
+                    key={user.email}
+                    style={{ textAlign: "center", width: 85, height: 100 }}
+                    onClick={() =>
+                      navigate(`/member/${user.userName}`, {
+                        state: { users },
+                      })
+                    }
+                  >
+                    <Avatar
+                      src={user.userImage}
+                      style={{ width: 70, height: 70 }}
+                    />
+                    <p>{user.userName}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

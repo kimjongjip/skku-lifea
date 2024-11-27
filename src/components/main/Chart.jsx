@@ -25,12 +25,12 @@ export default function Chart({ data }) {
     {
       name: "성공",
       data: successData,
-      color: "#FFAFB0",
+      color: "#C8FFC3",
     },
     {
       name: "실패",
       data: failData,
-      color: "#C8FFC3",
+      color: "#FFAFB0",
     },
   ];
   const options = {
@@ -58,11 +58,7 @@ export default function Chart({ data }) {
     fill: {
       opacity: 1,
     },
-    legend: {
-      position: "right",
-      offsetX: 0,
-      offsetY: 50,
-    },
+
     tooltip: {
       y: {
         formatter: (val) => `${val}%`, // 비율 값 표시

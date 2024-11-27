@@ -3,7 +3,7 @@ import axios from "axios";
 
 export default function CertificateBtn() {
   const [upload, setUpload] = useState(false);
-  const [imageFile, setImageFile] = useState(null); // 이미지 파일 상태 관리
+  const [imageFile, setImageFile] = useState(null);
   const inputRef = useRef();
 
   const onUploadImage = async (e) => {
@@ -11,7 +11,7 @@ export default function CertificateBtn() {
       return;
     }
     const file = e.target.files[0];
-    setImageFile(file); // 이미지 파일 저장
+    setImageFile(file);
     setUpload(true);
   };
 
@@ -40,9 +40,9 @@ export default function CertificateBtn() {
     }
     const formData = new FormData();
     formData.append("verification", imageFile);
-    for (const [key, value] of formData.entries()) {
-      console.log(`${key}:`, value);
-    }
+    // for (const [key, value] of formData.entries()) {
+    //   console.log(`${key}:`, value);
+    // }
     try {
       const response = await axios.post(
         "https://nsptbxlxoj.execute-api.ap-northeast-2.amazonaws.com/dev/verification/upload",
@@ -57,10 +57,10 @@ export default function CertificateBtn() {
           },
         }
       );
-      console.log("업로드 성공:", response.data);
+      // console.log("업로드 성공:", response.data);
       alert("이미지가 성공적으로 업로드되었습니다!");
     } catch (error) {
-      console.error("업로드 실패:", error.response?.data || error.message);
+      // console.error("업로드 실패:", error.response?.data || error.message);
       alert("이미지 업로드 중 문제가 발생했습니다.");
     }
   };

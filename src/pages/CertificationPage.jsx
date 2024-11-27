@@ -6,14 +6,14 @@ import { useState, useEffect } from "react";
 import Nav from "../components/common/Nav";
 import axios from "axios";
 
-// const dummy = [
-//   { id: 1, userName: "테스트1", curCnt: 0, totalCnt: 6, status: "none" },
-//   { id: 2, userName: "테스트2", curCnt: 1, totalCnt: 3, status: "fail" },
-//   { id: 3, userName: "테스트3", curCnt: 1, totalCnt: 3, status: "success" },
-//   { id: 4, userName: "테스트4", curCnt: 1, totalCnt: 3, status: "fail" },
-//   { id: 5, userName: "테스트5", curCnt: 1, totalCnt: 3, status: "success" },
-//   { id: 6, userName: "테스트6", curCnt: 1, totalCnt: 3, status: "success" },
-// ];
+const dummy = [
+  { id: 1, userName: "테스트1", curCnt: 0, totalCnt: 6, status: "none" },
+  { id: 2, userName: "테스트2", curCnt: 1, totalCnt: 3, status: "fail" },
+  { id: 3, userName: "테스트3", curCnt: 1, totalCnt: 3, status: "success" },
+  { id: 4, userName: "테스트4", curCnt: 1, totalCnt: 3, status: "fail" },
+  { id: 5, userName: "테스트5", curCnt: 1, totalCnt: 3, status: "success" },
+  { id: 6, userName: "테스트6", curCnt: 1, totalCnt: 3, status: "success" },
+];
 export default function CertificationPage() {
   const [certification, setCertification] = useState([]);
   useEffect(() => {
@@ -55,14 +55,14 @@ export default function CertificationPage() {
         }}
       >
         <div style={{ fontWeight: "bold", width: "90%" }}>
-          {certification[0]?.certificationDate.slice(0, 10)}
+          {/* {certification[0]?.certificationDate.slice(0, 10)} */}
         </div>
         <CertificateBtn />
-        {certification.map((data) => (
+        {dummy.map((data) => (
           <CertificateMember
             key={data.id}
             id={data.id}
-            date={data.certificationDate.slice(0, 10)}
+            date={data.certificationDate}
             userName={data.userName}
             totalCnt={data.totalCnt}
             curCnt={data.noNumber + data.yesNumber}
