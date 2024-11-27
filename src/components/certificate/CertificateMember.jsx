@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function CertificateMember({
+  img,
   userName,
   totalCnt,
   curCnt,
@@ -36,7 +37,7 @@ export default function CertificateMember({
     <div
       style={{
         backgroundColor: `${statusColor}`,
-        width: "90%",
+        width: "100%",
         height: "13vh",
         borderRadius: "20px",
         display: "flex",
@@ -50,6 +51,7 @@ export default function CertificateMember({
             id: id,
             statusColor: statusColor,
             date: date,
+            img: img,
           },
         });
       }}
