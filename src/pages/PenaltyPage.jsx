@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Header from "../components/common/Header";
 import Nav from "../components/common/Nav";
 import { useLocation } from "react-router-dom";
+import { fetchWithToken } from "@/utils/fetchWithToken"; // 유틸리티 함수 가져오기
 
 export default function PenaltyPage() {
   const [messages, setMessages] = useState([]);
@@ -10,10 +11,9 @@ export default function PenaltyPage() {
   // location을 사용하여 라우트 변경 감지
   const location = useLocation();
 
-  // 메시지 가져오기
   const fetchMessages = async () => {
     try {
-      const response = await fetch(
+      const response = await fetchWithToken(
         "https://nsptbxlxoj.execute-api.ap-northeast-2.amazonaws.com/dev/penalty/1/log"
       );
       const data = await response.json();
@@ -21,13 +21,15 @@ export default function PenaltyPage() {
       // 로그가 비어있을 경우 오늘 날짜로 'nopenalty' 메시지 생성
       if (!data.penaltyLogs || data.penaltyLogs.length === 0) {
         const today = new Date();
-        setMessages([{
-          date: formatDate(today),
-          time: "00:00",
-          content: "모두가 인증을 완료했습니다",
-          type: "nopenalty",
-          timestamp: today.getTime(),
-        }]);
+        setMessages([
+          {
+            date: formatDate(today),
+            time: "00:00",
+            content: "모두가 인증을 완료했습니다",
+            type: "nopenalty",
+            timestamp: today.getTime(),
+          },
+        ]);
         setError(false);
         return;
       }
@@ -37,11 +39,11 @@ export default function PenaltyPage() {
       data.penaltyLogs.forEach((log) => {
         const date = new Date(log.alaramDate);
         const dateStr = formatDate(date);
-        
+
         if (!messagesByDate[dateStr]) {
           messagesByDate[dateStr] = [];
         }
-        
+
         messagesByDate[dateStr].push({
           date: dateStr,
           time: `${String(date.getHours()).padStart(2, "0")}:${String(
@@ -56,7 +58,7 @@ export default function PenaltyPage() {
       // 각 날짜에 대해 벌칙이 없으면 'nopenalty' 메시지 추가
       const formattedMessages = [];
       Object.entries(messagesByDate).forEach(([date, messages]) => {
-        if (messages.every(msg => msg.type !== 'penalty')) {
+        if (messages.every((msg) => msg.type !== "penalty")) {
           formattedMessages.push({
             date,
             time: "00:00",
@@ -118,6 +120,11 @@ export default function PenaltyPage() {
           padding: "20px",
           margin: "15px 0",
           fontSize: "18px",
+        };
+      default:
+        return {
+          ...baseStyle,
+          backgroundColor: "#F0F0F0",
         };
     }
   };

@@ -4,7 +4,18 @@ import { MemoryRouter } from "react-router-dom";
 import { vi } from "vitest";
 import "@testing-library/jest-dom";
 
+// fetchWithToken을 모킹
+vi.mock("@/utils/fetchWithToken", () => ({
+  fetchWithToken: vi.fn(),
+}));
+
 describe("PenaltyPage", () => {
+  const { fetchWithToken } = require("@/utils/fetchWithToken");
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   test("renders header and navigation", () => {
     render(
       <MemoryRouter>
@@ -17,14 +28,26 @@ describe("PenaltyPage", () => {
 
   test("renders date divider for messages", async () => {
     const mockMessages = {
-      penaltyLogs: [
-        { alaramDate: "2024-11-23T12:00:00Z", alarmMessage: "첫 번째 메시지", alarmType: "penalty" },
-        { alaramDate: "2024-11-24T09:00:00Z", alarmMessage: "두 번째 메시지", alarmType: "nopenalty" },
-      ],
+      status: "success",
+      data: {
+        penaltyLogs: [
+          {
+            alaramDate: "2024-11-23T12:00:00.000Z",
+            alarmMessage: "첫 번째 메시지",
+            alarmType: "penalty",
+          },
+          {
+            alaramDate: "2024-11-24T09:00:00.000Z",
+            alarmMessage: "모두가 인증을 완료했습니다",
+            alarmType: "nopenalty",
+          },
+        ],
+      },
     };
 
-    global.fetch = vi.fn().mockResolvedValue({
-      json: vi.fn().mockResolvedValue(mockMessages),
+    fetchWithToken.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve(mockMessages),
     });
 
     render(
@@ -34,19 +57,31 @@ describe("PenaltyPage", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText(/첫 번째 메시지/)).toBeInTheDocument();
-      expect(screen.getByText(/두 번째 메시지/)).toBeInTheDocument();
-    });
+      expect(screen.getByText("첫 번째 메시지")).toBeInTheDocument();
+    }, { timeout: 3000 });
+
+    const penaltyMessage = screen.getByText("첫 번째 메시지");
+    expect(penaltyMessage.parentElement).toHaveStyle("background-color: #FFE5E5");
+
+    const noPenaltyMessage = screen.getByText("모두가 인증을 완료했습니다");
+    expect(noPenaltyMessage).toBeInTheDocument();
+    expect(noPenaltyMessage.parentElement.parentElement).toHaveStyle("background-color: #E5FFE5");
 
     expect(screen.getByText(/2024년 11월 23일/)).toBeInTheDocument();
     expect(screen.getByText(/2024년 11월 24일/)).toBeInTheDocument();
-
-    global.fetch.mockRestore();
   });
 
   test("handles empty message data gracefully", async () => {
-    global.fetch = vi.fn().mockResolvedValue({
-      json: vi.fn().mockResolvedValue({ penaltyLogs: [] }),
+    const mockEmptyResponse = {
+      status: "success",
+      data: {
+        penaltyLogs: [],
+      },
+    };
+
+    fetchWithToken.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve(mockEmptyResponse),
     });
 
     render(
@@ -56,14 +91,12 @@ describe("PenaltyPage", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByTestId("no-message")).toHaveTextContent("메시지가 없습니다");
+      expect(screen.getByText("모두가 인증을 완료했습니다")).toBeInTheDocument();
     });
-
-    global.fetch.mockRestore();
   });
 
   test("handles API call failure", async () => {
-    global.fetch = vi.fn().mockRejectedValue(new Error("Network Error"));
+    fetchWithToken.mockRejectedValueOnce(new Error("Network Error"));
 
     render(
       <MemoryRouter>
@@ -74,8 +107,6 @@ describe("PenaltyPage", () => {
     await waitFor(() => {
       expect(screen.getByTestId("error-message")).toHaveTextContent("오류가 발생했습니다");
     });
-
-    global.fetch.mockRestore();
   });
 
   test("renders message with default style for unknown type", () => {
@@ -88,12 +119,15 @@ describe("PenaltyPage", () => {
 
     render(
       <div>
-        <div data-testid="unknown-message" style={{
-          padding: "10px",
-          borderRadius: "8px",
-          marginBottom: "10px",
-          backgroundColor: "#F0F0F0", // Default color
-        }}>
+        <div
+          data-testid="unknown-message"
+          style={{
+            padding: "10px",
+            borderRadius: "8px",
+            marginBottom: "10px",
+            backgroundColor: "#F0F0F0", // Default color
+          }}
+        >
           {unknownMessage.content}
         </div>
       </div>
