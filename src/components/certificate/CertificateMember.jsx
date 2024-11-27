@@ -72,7 +72,7 @@ export default function CertificateMember({
           투표 현황 {cnt}/{totalCnt}
         </div>
       </div>
-      {status === "success" ? (
+      {status === "none" ? (
         <div style={{ width: "20%", gap: "10px", display: "flex" }}>
           {" "}
           <button
