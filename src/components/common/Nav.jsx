@@ -83,6 +83,11 @@ export default function Nav() {
           </TabList>
         </Box>
       </TabContext>
+      {value === '4' && (
+        <Box sx={{ marginTop: "60px" }}> {/* Adjust margin as needed */}
+          <HtmlLoader file={`/html/templates/group-info.html`}/>
+        </Box>
+      )}
     </div>
   );
 }

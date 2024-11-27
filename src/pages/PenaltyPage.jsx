@@ -110,7 +110,7 @@ export default function PenaltyPage() {
       case "penalty":
         return {
           ...baseStyle,
-          backgroundColor: "#FFE5E5",
+          backgroundColor: "#FFAFB0",
         };
       case "nopenalty":
         return {
@@ -212,7 +212,7 @@ export default function PenaltyPage() {
               data-testid="error-message"
               style={{
                 textAlign: "center",
-                color: "red",
+                color: "#C8FFC3",
                 fontWeight: "bold",
               }}
             >
