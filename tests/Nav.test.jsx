@@ -60,7 +60,7 @@ describe("Nav", () => {
     expect(screen.getByRole("tab", { name: /메인/i })).toHaveAttribute("href", "/main");
     expect(screen.getByRole("tab", { name: /인증/i })).toHaveAttribute("href", "/certificate");
     expect(screen.getByRole("tab", { name: /벌칙/i })).toHaveAttribute("href", "/penalty");
-    expect(screen.getByRole("tab", { name: /모임관리/i })).toHaveAttribute("href", "/management");
+    expect(screen.getByRole("tab", { name: /모임관리/i })).toHaveAttribute("href", "/group-info");
   });
 
   it("다른 경로에 대해 올바른 초기 탭이 설정된다", () => {
@@ -68,7 +68,7 @@ describe("Nav", () => {
       { path: '/main', expectedTab: '메인' },
       { path: '/certificate', expectedTab: '인증' },
       { path: '/penalty', expectedTab: '벌칙' },
-      { path: '/management', expectedTab: '모임관리' }
+      { path: '/group-info', expectedTab: '모임관리' }
     ];
 
     routes.forEach(({ path, expectedTab }) => {
