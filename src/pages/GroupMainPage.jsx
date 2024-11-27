@@ -19,23 +19,41 @@ export default function GroupMainPage() {
 
   const getUserInfo = async () => {
     const res = await axios.get(
-      "https://nsptbxlxoj.execute-api.ap-northeast-2.amazonaws.com/dev/user/info"
+      "https://nsptbxlxoj.execute-api.ap-northeast-2.amazonaws.com/dev/user/info",
+      {
+        headers: {
+          Authorization:
+            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjaGxla2RsZjEyMzRAZ21haWwuY29tIiwiaWF0IjoxNzMyNjA1OTU5LCJleHAiOjE3NjQxNDE5NTl9.86LBbz7DGZGGlLrJVwNwZmroV6XB_m-BqkPtcbm_z8k",
+        },
+      }
     );
-    const data = res.data;
-    setUsers([data]);
+    setUsers([res.data]);
   };
+
   const classId = 1;
 
-  const getClassInfo = async () => {
-    const res = await axios.get(
-      `https://nsptbxlxoj.execute-api.ap-northeast-2.amazonaws.com/dev/class/${users.email}}/`
-    );
-    const data = await res.data;
-    setClassInfo(data);
-  };
+  // const getClassInfo = async () => {
+  //   const res = await axios.get(
+  //     `https://nsptbxlxoj.execute-api.ap-northeast-2.amazonaws.com/dev/class/${classId}`,
+  //     {
+  //       headers: {
+  //         Authorization:
+  //           "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjaGxla2RsZjEyMzRAZ21haWwuY29tIiwiaWF0IjoxNzMyNjA1OTU5LCJleHAiOjE3NjQxNDE5NTl9.86LBbz7DGZGGlLrJVwNwZmroV6XB_m-BqkPtcbm_z8k",
+  //       },
+  //     }
+  //   );
+  //   const data = await res.data;
+  //   // setClassInfo(data);
+  // };
   const getClassStatistics = async () => {
     const res = await axios.get(
-      `https://nsptbxlxoj.execute-api.ap-northeast-2.amazonaws.com/dev/class/${classId}/statistics`
+      `https://nsptbxlxoj.execute-api.ap-northeast-2.amazonaws.com/dev/class/${classId}/statistics`,
+      {
+        headers: {
+          Authorization:
+            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjaGxla2RsZjEyMzRAZ21haWwuY29tIiwiaWF0IjoxNzMyNjA1OTU5LCJleHAiOjE3NjQxNDE5NTl9.86LBbz7DGZGGlLrJVwNwZmroV6XB_m-BqkPtcbm_z8k",
+        },
+      }
     );
     const data = res.data.chart;
     setStatistics(data);
@@ -43,11 +61,12 @@ export default function GroupMainPage() {
   useEffect(() => {
     getUserInfo();
     getClassStatistics();
+    console.log("실행");
   }, []);
 
-  useEffect(() => {
-    getClassInfo();
-  }, [users]);
+  // useEffect(() => {
+  //   getClassInfo();
+  // }, [users]);
   return (
     <div
       style={{
@@ -74,7 +93,7 @@ export default function GroupMainPage() {
         {/* 모임 정보 */}
         <div style={{ display: "flex", margin: "0", width: "100%" }}>
           <Avatar
-            src={Profile}
+            src={users[0]?.userClass[0]?.classImage}
             style={{
               width: 80,
               height: 80,
@@ -90,8 +109,10 @@ export default function GroupMainPage() {
               margin: "auto 0",
             }}
           >
-            <h3 style={{ margin: "0" }}>{groupName}</h3>
-            <p style={{ margin: "0" }}>{groupIntro}</p>
+            <h3 style={{ margin: "0" }}>{users[0]?.userClass[0]?.className}</h3>
+            <p style={{ margin: "0" }}>
+              {users[0]?.userClass[0]?.classDescription}
+            </p>
           </div>
         </div>
         {/* 통계 부분    */}
@@ -118,7 +139,7 @@ export default function GroupMainPage() {
               columnGap: "5px",
             }}
           >
-            {users.map((user) => (
+            {users[0]?.userClass[0]?.classMember.map((user) => (
               <div
                 key={user.email}
                 style={{ textAlign: "center", width: 85, height: 100 }}

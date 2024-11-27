@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from "react";
 import ReactApexChart from "react-apexcharts";
 
@@ -17,16 +18,19 @@ export default function Chart({ data }) {
   );
   const series = [
     {
-      name: "Not Verified",
+      name: "미인증",
       data: notVerifiedData,
+      color: "#BBD6FF",
     },
     {
-      name: "Success",
+      name: "성공",
       data: successData,
+      color: "#FFAFB0",
     },
     {
-      name: "Fail",
+      name: "실패",
       data: failData,
+      color: "#C8FFC3",
     },
   ];
   const options = {
@@ -49,7 +53,7 @@ export default function Chart({ data }) {
       },
     ],
     xaxis: {
-      categories: categories, // X축에 날짜 표시
+      categories: categories,
     },
     fill: {
       opacity: 1,
@@ -63,6 +67,13 @@ export default function Chart({ data }) {
       y: {
         formatter: (val) => `${val}%`, // 비율 값 표시
       },
+    },
+    dataLabels: {
+      enabled: true,
+      style: {
+        colors: ["#000"], // 글자 색상을 검정(#000)으로 설정
+      },
+      formatter: (val) => `${val}%`, // 비율 값 표시
     },
   };
   return (
