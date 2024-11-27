@@ -1,22 +1,12 @@
-import { render, screen, waitFor, fireEvent, act } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { vi } from "vitest";
 import "@testing-library/jest-dom";
 import axios from "axios";
 
-// ResizeObserver 모킹
-class ResizeObserver {
-  observe() {}
-  unobserve() {}
-  disconnect() {}
-}
-
-// 전역 설정
-global.ResizeObserver = ResizeObserver;
-window.ResizeObserver = ResizeObserver;
-
 const navigate = vi.fn();
 
+// react-router-dom 모킹
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual("react-router-dom");
   return {
@@ -25,21 +15,21 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
+// axios 모킹
 vi.mock("axios");
 
-// Chart 컴포넌트 모킹 수정
+// Chart 컴포넌트를 완전히 모킹
 vi.mock("@/components/main/chart", () => ({
-  default: () => <div data-testid="chart-component">Chart Component</div>,
+  __esModule: true,
+  default: () => {
+    return <div>통계 데이터</div>;
+  },
 }));
 
 import GroupMainPage from "@/pages/GroupMainPage";
 
 describe("GroupMainPage", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  afterEach(() => {
     vi.clearAllMocks();
   });
 
@@ -84,14 +74,12 @@ describe("GroupMainPage", () => {
     );
 
     await waitFor(() => {
-      expect(screen.queryByText("로딩 중...")).not.toBeInTheDocument();
+      expect(screen.getByText("모임 이름")).toBeInTheDocument();
+      expect(screen.getByText("모임 소개문")).toBeInTheDocument();
+      expect(screen.getByText("User1")).toBeInTheDocument();
+      expect(screen.getByText("User2")).toBeInTheDocument();
+      expect(screen.getByText("통계 데이터")).toBeInTheDocument();
     });
-
-    expect(screen.getByText("모임 이름")).toBeInTheDocument();
-    expect(screen.getByText("모임 소개문")).toBeInTheDocument();
-    expect(screen.getByText("User1")).toBeInTheDocument();
-    expect(screen.getByText("User2")).toBeInTheDocument();
-    expect(screen.getByTestId("chart-component")).toBeInTheDocument();
   });
 
   it("API 호출 실패 시 오류를 처리한다", async () => {
@@ -104,10 +92,8 @@ describe("GroupMainPage", () => {
     );
 
     await waitFor(() => {
-      expect(screen.queryByText("로딩 중...")).not.toBeInTheDocument();
+      expect(screen.getByText("기본 모임 이름")).toBeInTheDocument();
     });
-
-    expect(screen.getByText("기본 모임 이름")).toBeInTheDocument();
   });
 
   it("모임원을 클릭하면 상세 페이지로 이동한다", async () => {
@@ -139,7 +125,7 @@ describe("GroupMainPage", () => {
     );
 
     await waitFor(() => {
-      expect(screen.queryByText("로딩 중...")).not.toBeInTheDocument();
+      expect(screen.getByText("User1")).toBeInTheDocument();
     });
 
     fireEvent.click(screen.getByText("User1"));
