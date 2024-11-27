@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Avatar } from "@mui/material";
 
 export default function CertificateMember({
   img,
@@ -38,7 +39,7 @@ export default function CertificateMember({
       style={{
         backgroundColor: `${statusColor}`,
         width: "100%",
-        height: "13vh",
+        height: "120px",
         borderRadius: "20px",
         display: "flex",
         flexDirection: "row",
@@ -56,16 +57,15 @@ export default function CertificateMember({
         });
       }}
     >
-      <img
+      <Avatar
         src="src/assets/logo.png"
         alt="user"
         style={{
-          width: "50px",
-          height: "50px",
-          borderRadius: "50px",
+          width: "80px",
+          height: "80px",
           backgroundColor: "#D9D9D9",
         }}
-      ></img>
+      ></Avatar>
       <div>
         <div style={{ fontWeight: "bold" }}>{userName}</div>
         <div>

@@ -1,4 +1,5 @@
 /* eslint-disable react/prop-types */
+import { Avatar } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -16,32 +17,44 @@ export default function MainMemberCertificate({ image, date, status }) {
     <div
       style={{
         backgroundColor: `${statusColor}`,
-        width: "90%",
-        height: "13vh",
+        width: "100%",
+        height: "120px",
         borderRadius: "20px",
         display: "flex",
         flexDirection: "row",
+        gap: "10px",
+        padding: "20px",
+        justifyContent: "flex-start"
       }}
     >
       {" "}
+      <Avatar
+        src={image}
+        alt="user"
+        style={{
+          width: "80px",
+          height: "80px",
+          backgroundColor: "#D9D9D9",
+          margin: "0px"
+        }}
+      ></Avatar>
+      <div
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        gap: "10px",
+        marginLeft: "0px"
+      }}
+      >
       <div>
         <div style={{ fontWeight: "bold" }}>{date}</div>
       </div>
       {status === "success" ? (
-        <div style={{ width: "20%", textAlign: "center" }}>인증 성공</div>
+        <div style={{ width: "120px", textAlign: "center" }}>인증 성공</div>
       ) : (
-        <div style={{ width: "20%", textAlign: "center" }}>인증 실패</div>
+        <div style={{ width: "120px", textAlign: "center" }}>인증 실패</div>
       )}
-      <img
-        src={image}
-        alt="user"
-        style={{
-          width: "100px",
-          height: "100px",
-          borderRadius: "5px",
-          backgroundColor: "#D9D9D9",
-        }}
-      ></img>
+      </div>
     </div>
   );
 }

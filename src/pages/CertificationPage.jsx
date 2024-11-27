@@ -82,22 +82,25 @@ export default function CertificationPage() {
         display: "flex",
         flexDirection: "column",
         width: "100%",
+        margin: "0",
         marginTop: "120px",
       }}
     >
-      <Header />
-      <Nav />
+      <div style={{ margin: "0" }}>
+        <Header />
+        <Nav />
+      </div>
       <div
         style={{
           display: "flex",
           flexDirection: "column",
-          width: "100%",
           gap: "10px",
+          margin: "0 10px",
         }}
       >
         <CertificateBtn />
         {certification.map(({ date, verifications }) => (
-          <div key={date} style={{ width: "90%" }}>
+          <div key={date} style={{ width: "100%" }}>
             <div style={{ fontWeight: "bold", marginBottom: "10px" }}>
               {date}
             </div>

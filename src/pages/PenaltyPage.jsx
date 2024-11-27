@@ -114,7 +114,7 @@ export default function PenaltyPage() {
       case "nopenalty":
         return {
           ...baseStyle,
-          backgroundColor: "#E5FFE5",
+          backgroundColor: "#C8FFC3",
           textAlign: "center",
           fontWeight: "bold",
           padding: "20px",
@@ -195,14 +195,15 @@ export default function PenaltyPage() {
           justifyContent: "center",
           alignItems: "center",
           boxSizing: "border-box",
+          margin: "0px 10px"
         }}
       >
         <div
           style={{
             width: "100%",
             maxWidth: "600px",
-            padding: "0 20px",
             boxSizing: "border-box",
+            borderRadius: "20px",
           }}
         >
           {error ? (

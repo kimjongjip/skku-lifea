@@ -62,7 +62,7 @@ export default function CertificateBtn() {
   };
 
   return (
-    <div style={{ width: "90%" }}>
+    <div style={{ width: "100%" }}>
       {upload === false ? (
         <div>
           <input
@@ -76,7 +76,7 @@ export default function CertificateBtn() {
             style={{
               backgroundColor: "#F2F2F2",
               width: "100%",
-              height: "15vh",
+              height: "120px",
               borderRadius: "20px",
             }}
             onClick={handleUpload}

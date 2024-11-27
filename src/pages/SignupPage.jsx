@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { TextField, Button } from "@mui/material";
 import Header from "../components/common/Header";
 import Nav from "../components/common/Nav";
-import Chart from "../components/main/chart";
+import Chart from "../components/main/Chart";
 
 export default function SignupPage() {
   return (
