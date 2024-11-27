@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Tabs, Tab, Box } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { Link, useLocation } from "react-router-dom";
-import zIndex from "@mui/material/styles/zIndex";
+import HtmlLoader from "@/components/common/HtmlLoader";
 
 export default function Nav() {
   const location = useLocation();
@@ -14,7 +14,7 @@ export default function Nav() {
       return '2';
     } else if (location.pathname.startsWith('/penalty')) {
       return '3';
-    } else if (location.pathname.startsWith('/management')) {
+    } else if (location.pathname.startsWith('/group-info')) {
       return '4';
     } else {
       return '1';
@@ -75,7 +75,7 @@ export default function Nav() {
             />
             <Tab
               component={Link}
-              to="/management"
+              to="/group-info"
               label="모임관리"
               value="4"
               sx={{ padding: "0", minHeight: "40px", height: "40px" }}

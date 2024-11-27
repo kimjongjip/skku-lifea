@@ -13,8 +13,9 @@ export default function PenaltyPage() {
 
   const fetchMessages = async () => {
     try {
+      const classid = "5a5bbe7d-2744-439b-86d2-e380342d6c91"
       const response = await fetchWithToken(
-        "https://nsptbxlxoj.execute-api.ap-northeast-2.amazonaws.com/dev/penalty/1/log"
+        `https://nsptbxlxoj.execute-api.ap-northeast-2.amazonaws.com/dev/penalty/${classid}/log`
       );
       const data = await response.json();
 
