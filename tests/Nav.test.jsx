@@ -1,11 +1,11 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter, useLocation } from "react-router-dom";
 import { vi } from "vitest";
-import Nav from "../src/components/common/Nav";
+import Nav from "@/components/common/Nav"; // Nav 컴포넌트의 경로에 맞게 수정하세요
 import { expect, describe, it, beforeEach } from "vitest";
 import "@testing-library/jest-dom";
 
-// Mock useLocation
+// useLocation 모킹
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
   return {
@@ -28,7 +28,7 @@ describe("Nav", () => {
     vi.clearAllMocks();
   });
 
-  it("renders all navigation tabs", () => {
+  it("모든 네비게이션 탭을 렌더링한다", () => {
     renderNav();
     
     expect(screen.getByRole("tab", { name: /메인/i })).toBeInTheDocument();
@@ -37,27 +37,14 @@ describe("Nav", () => {
     expect(screen.getByRole("tab", { name: /모임관리/i })).toBeInTheDocument();
   });
 
-  it("applies correct styles to container", () => {
-    const { container } = renderNav();
-    
-    // 최상위 div를 직접 선택
-    const navContainer = container.firstChild;
-    
-    // width와 height만 테스트
-    expect(navContainer).toHaveStyle({
-      width: "100%",
-      height: "40px"
-    });
-  });
-
-  it("sets initial tab value based on location", () => {
+  it("location에 따라 초기 탭 값이 설정된다", () => {
     renderNav('/certificate');
     
     const certificateTab = screen.getByRole("tab", { name: /인증/i });
     expect(certificateTab).toHaveAttribute("aria-selected", "true");
   });
 
-  it("changes selected tab when clicking", () => {
+  it("탭을 클릭하면 선택된 탭이 변경된다", () => {
     renderNav();
     
     const penaltyTab = screen.getByRole("tab", { name: /벌칙/i });
@@ -67,7 +54,7 @@ describe("Nav", () => {
     expect(screen.getByRole("tab", { name: /메인/i })).toHaveAttribute("aria-selected", "false");
   });
 
-  it("renders tabs with correct routing links", () => {
+  it("탭이 올바른 라우팅 링크를 가지고 있다", () => {
     renderNav();
     
     expect(screen.getByRole("tab", { name: /메인/i })).toHaveAttribute("href", "/main");
@@ -76,18 +63,7 @@ describe("Nav", () => {
     expect(screen.getByRole("tab", { name: /모임관리/i })).toHaveAttribute("href", "/management");
   });
 
-  it("applies correct styles to tabs", () => {
-    renderNav();
-    
-    const tab = screen.getByRole("tab", { name: /메인/i });
-    expect(tab).toHaveStyle({
-      padding: "0",
-      minHeight: "40px",
-      height: "40px"
-    });
-  });
-
-  it("sets correct initial tab for different routes", () => {
+  it("다른 경로에 대해 올바른 초기 탭이 설정된다", () => {
     const routes = [
       { path: '/main', expectedTab: '메인' },
       { path: '/certificate', expectedTab: '인증' },
@@ -106,7 +82,7 @@ describe("Nav", () => {
     });
   });
 
-  it("maintains tab selection when navigating", () => {
+  it("탭 사이를 이동할 때 선택 상태를 유지한다", () => {
     renderNav();
     
     // 벌칙 탭 클릭

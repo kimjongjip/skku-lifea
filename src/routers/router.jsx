@@ -1,7 +1,5 @@
 // Router: 각 URL에 따른 page 컴포넌트 연결
 import { createBrowserRouter } from "react-router-dom";
-import LoginPage from "../pages/LoginPage";
-import SignupPage from "../pages/SignupPage";
 import HtmlLoader from "../components/common/HtmlLoader";
 import CertificationPage from "../pages/CertificationPage";
 import PersonalCertificationPage from "../pages/PersonalCertificationPage";
