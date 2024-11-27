@@ -8,6 +8,7 @@ export default function CertificateMember({
   curCnt,
   status,
   id,
+  date,
 }) {
   const [statusColor, setStatusColor] = useState("#BBD6FF");
   const [cnt, setCnt] = useState(curCnt);
@@ -35,7 +36,7 @@ export default function CertificateMember({
     <div
       style={{
         backgroundColor: `${statusColor}`,
-        width: "100%",
+        width: "90%",
         height: "13vh",
         borderRadius: "20px",
         display: "flex",
@@ -48,6 +49,7 @@ export default function CertificateMember({
             status: status,
             id: id,
             statusColor: statusColor,
+            date: date,
           },
         });
       }}
@@ -63,7 +65,7 @@ export default function CertificateMember({
         }}
       ></img>
       <div>
-        <div>{userName}</div>
+        <div style={{ fontWeight: "bold" }}>{userName}</div>
         <div>
           투표 현황 {cnt}/{totalCnt}
         </div>
@@ -81,7 +83,7 @@ export default function CertificateMember({
             }}
             onClick={(e) => {
               e.stopPropagation();
-              console.log("vote click");
+
               handleVote(e.target);
             }}
           >
@@ -97,7 +99,7 @@ export default function CertificateMember({
             }}
             onClick={(e) => {
               e.stopPropagation();
-              console.log("vote click");
+
               handleVote(e.target);
             }}
           >

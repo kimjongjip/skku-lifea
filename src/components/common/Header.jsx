@@ -1,19 +1,21 @@
-import React from "react";
+import logoImg from "/src/assets/logo.png";
 
 export default function Header() {
   return (
     <div
       style={{
-        width: "100%",
+        width: "390px",
         display: "flex",
         flexDirection: "row",
         height: "60px",
-        position: "sticky",
+        position: "fixed",
+        backgroundColor: "white",
         top: 0,
+        zIndex: 1,
       }}
     >
       <img
-        src="src/assets/logo.png"
+        src={logoImg}
         alt="logo"
         style={{
           width: "30%",
@@ -21,6 +23,7 @@ export default function Header() {
           height: "60px",
           objeftFit: "contain",
           padding: "5px",
+          backgroundColor: "white",
         }}
       />
       <div style={{ width: "70%", textAlign: "left" }}>스꾸라이프</div>
