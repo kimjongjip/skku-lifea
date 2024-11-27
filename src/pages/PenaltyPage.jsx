@@ -70,7 +70,7 @@ export default function PenaltyPage() {
         formattedMessages.push(...messages);
       });
 
-      // 타임스탬프로 정렬
+      // 타임스탬���로 정렬
       formattedMessages.sort((a, b) => b.timestamp - a.timestamp);
 
       setMessages(formattedMessages);
@@ -183,6 +183,7 @@ export default function PenaltyPage() {
         boxSizing: "border-box",
         fontFamily: "Arial, sans-serif",
         color: "#333",
+        paddingTop: "120px",
       }}
     >
       <Header />
@@ -193,7 +194,6 @@ export default function PenaltyPage() {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          paddingTop: "20px",
           boxSizing: "border-box",
         }}
       >
@@ -231,10 +231,7 @@ export default function PenaltyPage() {
             messages.reduce((acc, message, index) => {
               if (index === 0 || messages[index - 1].date !== message.date) {
                 acc.push(
-                  <DateDivider
-                    key={`date-${message.date}`}
-                    date={message.date}
-                  />
+                  <DateDivider key={`date-${message.date}`} date={message.date} />
                 );
               }
               acc.push(
