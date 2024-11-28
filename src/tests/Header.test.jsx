@@ -1,7 +1,7 @@
 // tests/Header.test.jsx
 
 import { render, screen } from "@testing-library/react";
-import Header from "../../../skku-life/src/components/common/Header"; // 실제 경로로 수정하세요
+import Header from "@/components/common/Header"; // 실제 경로로 수정하세요
 import "@testing-library/jest-dom";
 import { vi } from "vitest";
 
