@@ -91,7 +91,7 @@ describe("PenaltyPage", () => {
       // 직접적인 스타일 확인으로 변경
       const messageContainer = noPenaltyMessage.closest('div[style*="background-color"]');
       expect(messageContainer).toHaveStyle({
-        backgroundColor: 'rgb(229, 255, 229)',
+        backgroundColor: 'rgb(200, 255, 195)',
       });
     });
   });

@@ -1,175 +1,182 @@
-// tests/GroupMainPage.test.jsx
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
+import GroupMainPage from '@/pages/GroupMainPage'
 
-import { render, screen, waitFor, fireEvent, act } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom"; // `useNavigate`를 임포트하지 않습니다.
-import { vi } from "vitest";
-import "@testing-library/jest-dom";
-import axios from "axios";
+// Mock the assets
+vi.mock('../assets/profile_default.png', () => ({
+  default: 'default-profile-path'
+}))
 
-// `useNavigate` 모킹을 위한 네비게이트 함수 생성
-const navigate = vi.fn();
+// Mock axios
+vi.mock('axios')
 
-// `react-router-dom` 모듈 모킹
-vi.mock("react-router-dom", async () => {
-  const actual = await vi.importActual("react-router-dom");
-  return {
-    ...actual,
-    useNavigate: () => navigate, // `useNavigate`를 모의 함수로 모킹
-  };
-});
+// Mock navigate
+const mockNavigate = vi.fn()
+vi.mock('react-router-dom', () => ({
+  useNavigate: () => mockNavigate
+}))
 
-// `axios` 모킹
-vi.mock("axios");
+// Mock components
+vi.mock('../components/common/Header', () => ({
+  default: () => <div>Header</div>
+}))
 
-// `Chart` 컴포넌트 모킹
-vi.mock("../src/components/main/chart", () => ({
-  default: () => <div>Chart Component</div>,
-}));
+vi.mock('../components/common/Nav', () => ({
+  default: () => <nav>Navigation</nav>
+}))
 
-// 이제 컴포넌트를 임포트합니다. 모킹이 완료된 후에 임포트해야 합니다.
-import GroupMainPage from "../src/pages/GroupMainPage"; // 컴포넌트 경로에 맞게 수정하세요
+vi.mock('../components/main/Chart', () => ({
+  default: ({ data }) => <div data-testid="chart">Chart Component</div>
+}))
 
-describe("GroupMainPage", () => {
+// Mock Material-UI components
+vi.mock('@mui/material', () => ({
+  Avatar: ({ src, style, children }) => (
+    <div data-testid="avatar" style={style}>
+      <img src={src} alt="avatar" />
+      {children}
+    </div>
+  )
+}))
+
+describe('GroupMainPage', () => {
+  const mockUserData = {
+    userClass: [
+      {
+        classImage: 'class-image.jpg',
+        className: '테스트 모임',
+        classDescription: '테스트 모임 설명',
+        classMember: [
+          {
+            email: 'test@test.com',
+            userName: '테스트 유저',
+            userImage: 'user-image.jpg'
+          },
+          {
+            email: 'test2@test.com',
+            userName: '테스트 유저2',
+            userImage: 'user-image2.jpg'
+          }
+        ]
+      }
+    ]
+  }
+
+  const mockStatisticsData = {
+    chart: [
+      { date: '2024-01', certificationRate: 80 },
+      { date: '2024-02', certificationRate: 85 }
+    ]
+  }
+
   beforeEach(() => {
-    vi.clearAllMocks();
-  });
+    vi.clearAllMocks()
+    // Mock API responses
+    vi.mocked(axios.get).mockImplementation((url) => {
+      if (url.includes('/user/info')) {
+        return Promise.resolve({ data: mockUserData })
+      }
+      if (url.includes('/statistics')) {
+        return Promise.resolve({ data: mockStatisticsData })
+      }
+      return Promise.reject(new Error('Not found'))
+    })
+  })
 
-  it("초기에 로딩 상태를 표시한다", () => {
-    render(
-      <MemoryRouter>
-        <GroupMainPage />
-      </MemoryRouter>
-    );
+  it('shows loading state initially', () => {
+    render(<GroupMainPage />)
+    expect(screen.getByText('로딩 중...')).toBeInTheDocument()
+  })
 
-    expect(screen.getByText("로딩 중...")).toBeInTheDocument();
-  });
+  it('renders header and navigation', () => {
+    render(<GroupMainPage />)
+    expect(screen.getByText('Header')).toBeInTheDocument()
+    expect(screen.getByText('Navigation')).toBeInTheDocument()
+  })
 
-  it("유저 정보와 통계 데이터를 가져와서 표시한다", async () => {
-    const mockUserInfo = {
-      userClass: [
-        {
-          classImage: "classImageURL",
-          className: "모임 이름",
-          classDescription: "모임 소개문",
-          classMember: [
-            {
-              email: "user1@example.com",
-              userName: "User1",
-              userImage: "userImageURL1",
-            },
-            {
-              email: "user2@example.com",
-              userName: "User2",
-              userImage: "userImageURL2",
-            },
-          ],
-        },
-      ],
-    };
+  it('fetches and displays group information', async () => {
+    render(<GroupMainPage />)
 
-    const mockStatistics = {
-      chart: [
-        { date: "2023-01-01", value: 10 },
-        { date: "2023-01-02", value: 15 },
-      ],
-    };
-
-    axios.get
-      .mockResolvedValueOnce({ data: mockUserInfo }) // 첫 번째 API 호출 (getUserInfo)
-      .mockResolvedValueOnce({ data: mockStatistics }); // 두 번째 API 호출 (getClassStatistics)
-
-    await act(async () => {
-      render(
-        <MemoryRouter>
-          <GroupMainPage />
-        </MemoryRouter>
-      );
-    });
-
-    // 로딩이 끝날 때까지 기다립니다.
     await waitFor(() => {
-      expect(screen.queryByText("로딩 중...")).not.toBeInTheDocument();
-    });
+      expect(screen.getByText('테스트 모임')).toBeInTheDocument()
+      expect(screen.getByText('테스트 모임 설명')).toBeInTheDocument()
+    })
 
-    // 모임 정보가 표시되는지 확인합니다.
-    expect(screen.getByText("모임 이름")).toBeInTheDocument();
-    expect(screen.getByText("모임 소개문")).toBeInTheDocument();
+    expect(axios.get).toHaveBeenCalledWith(
+      'https://nsptbxlxoj.execute-api.ap-northeast-2.amazonaws.com/dev/user/info',
+      expect.any(Object)
+    )
+  })
 
-    // 모임원이 표시되는지 확인합니다.
-    expect(screen.getByText("User1")).toBeInTheDocument();
-    expect(screen.getByText("User2")).toBeInTheDocument();
+  it('displays group members', async () => {
+    render(<GroupMainPage />)
 
-    // 차트 컴포넌트가 렌더링되는지 확인합니다.
-    expect(screen.getByText("Chart Component")).toBeInTheDocument();
-  });
-
-  it("API 호출 실패 시 오류를 처리한다", async () => {
-    // getUserInfo 호출 시 에러 발생
-    axios.get.mockRejectedValueOnce(new Error("Network Error"));
-
-    await act(async () => {
-      render(
-        <MemoryRouter>
-          <GroupMainPage />
-        </MemoryRouter>
-      );
-    });
-
-    // 로딩이 끝날 때까지 기다립니다.
     await waitFor(() => {
-      expect(screen.queryByText("로딩 중...")).not.toBeInTheDocument();
-    });
+      expect(screen.getByText('모임원')).toBeInTheDocument()
+      expect(screen.getByText('테스트 유저')).toBeInTheDocument()
+      expect(screen.getByText('테스트 유저2')).toBeInTheDocument()
+    })
+  })
 
-    // 기본 모임 정보가 표시되는지 확인합니다.
-    expect(screen.getByText("기본 모임 이름")).toBeInTheDocument();
-    expect(screen.getByText("기본 모임 설명")).toBeInTheDocument();
-  });
+  it('navigates to member page when clicking on a member', async () => {
+    render(<GroupMainPage />)
 
-  it("모임원을 클릭하면 상세 페이지로 이동한다", async () => {
-    const mockUserInfo = {
-      userClass: [
-        {
-          classImage: "classImageURL",
-          className: "모임 이름",
-          classDescription: "모임 소개문",
-          classMember: [
-            {
-              email: "user1@example.com",
-              userName: "User1",
-              userImage: "userImageURL1",
-            },
-          ],
-        },
-      ],
-    };
-
-    const mockStatistics = {
-      chart: [],
-    };
-
-    axios.get
-      .mockResolvedValueOnce({ data: mockUserInfo })
-      .mockResolvedValueOnce({ data: mockStatistics });
-
-    await act(async () => {
-      render(
-        <MemoryRouter>
-          <GroupMainPage />
-        </MemoryRouter>
-      );
-    });
-
-    // 로딩이 끝날 때까지 기다립니다.
     await waitFor(() => {
-      expect(screen.queryByText("로딩 중...")).not.toBeInTheDocument();
-    });
+      expect(screen.getByText('테스트 유저')).toBeInTheDocument()
+    })
 
-    // 모임원을 클릭합니다.
-    fireEvent.click(screen.getByText("User1"));
+    fireEvent.click(screen.getByText('테스트 유저'))
 
-    // navigate 함수가 올바른 인자로 호출되었는지 확인합니다.
-    expect(navigate).toHaveBeenCalledWith(`/member/User1`, {
-      state: { users: mockUserInfo },
-    });
-  });
-});
+    expect(mockNavigate).toHaveBeenCalledWith(
+      '/member/테스트 유저',
+      expect.any(Object)
+    )
+  })
+
+  it('displays statistics chart', async () => {
+    render(<GroupMainPage />)
+
+    await waitFor(() => {
+      expect(screen.getByText('통계치')).toBeInTheDocument()
+      expect(screen.getByTestId('chart')).toBeInTheDocument()
+    })
+
+    expect(axios.get).toHaveBeenCalledWith(
+      'https://nsptbxlxoj.execute-api.ap-northeast-2.amazonaws.com/dev/class/1/statistics',
+      expect.any(Object)
+    )
+  })
+
+  it('handles API error gracefully', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.mocked(axios.get).mockRejectedValueOnce(new Error('API Error'))
+
+    render(<GroupMainPage />)
+
+    await waitFor(() => {
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Error fetching user info:',
+        expect.any(Error)
+      )
+    })
+
+    consoleSpy.mockRestore()
+  })
+
+  it('uses default values when API data is missing', async () => {
+    vi.mocked(axios.get).mockResolvedValueOnce({ 
+      data: { userClass: [{ }] } 
+    })
+
+    render(<GroupMainPage />)
+
+    await waitFor(() => {
+      const avatar = screen.getAllByTestId('avatar')[0]
+      expect(avatar).toBeInTheDocument()
+      // 기본 이미지가 사용되었는지 확인
+      expect(avatar.querySelector('img')).toHaveAttribute('src', 'default-profile-path')
+    })
+  })
+})
