@@ -10,7 +10,7 @@ import GroupMemberPage from "../pages/GroupMemberPage";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <HtmlLoader file="/html/templates/signin.html" />,
+    element: <HtmlLoader file="/html/templates/login.html" />,
     index: true,
   },
   {
