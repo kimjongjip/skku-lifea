@@ -7,17 +7,17 @@ import HtmlLoader from "@/components/common/HtmlLoader";
 export default function Nav() {
   const location = useLocation();
   const [value, setValue] = useState(() => {
-    switch (location.pathname) {
-      case "/main":
-        return "1";
-      case "/certificate":
-        return "2";
-      case "/penalty":
-        return "3";
-      case "/group-info":
-        return "4";
-      default:
-        return "1";
+    
+    if (location.pathname.startsWith('/main')){
+      return '1';
+    } else if (location.pathname.startsWith('/certificate')) {
+      return '2';
+    } else if (location.pathname.startsWith('/penalty')) {
+      return '3';
+    } else if (location.pathname.startsWith('/group-info')) {
+      return '4';
+    } else {
+      return '1';
     }
   });
 
@@ -83,6 +83,11 @@ export default function Nav() {
           </TabList>
         </Box>
       </TabContext>
+      {value === '4' && (
+        <Box sx={{ marginTop: "60px" }}> {/* Adjust margin as needed */}
+          <HtmlLoader file={`/html/templates/group-info.html`}/>
+        </Box>
+      )}
     </div>
   );
 }

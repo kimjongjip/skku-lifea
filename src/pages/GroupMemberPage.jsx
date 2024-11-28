@@ -4,6 +4,7 @@ import Nav from "../components/common/Nav";
 import MainMemberCertificate from "../components/main/MainMemberCertificate";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
+import { Avatar } from "@mui/material";
 
 export default function GroupMemberPage() {
   const location = useLocation();
@@ -66,44 +67,44 @@ export default function GroupMemberPage() {
         display: "flex",
         flexDirection: "column",
         width: "100%",
+        gap: "15px",
+        margin: "0",
         marginTop: "120px",
       }}
     >
-      <Header />
-      <Nav />
+      <div style={{ margin: "0" }}>
+        <Header />
+        <Nav />
+      </div>
       <div
         style={{
           display: "flex",
           flexDirection: "column",
-          width: "100%",
           gap: "10px",
-          alignItems: "flex-start",
+          margin: "0 10px",
         }}
       >
         <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            gap: "10px",
-            width: "90%",
-            alignItems: "center",
-          }}
+          style={{ display: "flex", margin: "0", width: "100%" }}
         >
-          <img
+          <Avatar
             src={user.userImage}
             alt="user"
             style={{
               width: "80px",
               height: "80px",
-              borderRadius: "50px",
-              backgroundColor: "#D9D9D9",
-              margin: 0,
+              marginRight: "20px",
+              marginLeft: "0",
             }}
-          ></img>
-          <div style={{ margin: 0, fontWeight: "bold" }}>{user.userName}</div>
+          ></Avatar>
+          <div style={{ gap: "5px",
+                  margin: "auto 0" }}><h3 style={{ margin: "0" }}>{user.userName}</h3></div>
         </div>
+        
+        <div style={{ width: "100%" }}>
+        <h3 style={{ marginBottom: "5px" }}>인증 현황</h3>
 
-        <div style={{ width: "90%" }}>인증 현황</div>
+        </div>
 
         {verificationData.map((d) => {
           return (

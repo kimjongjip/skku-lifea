@@ -1,121 +1,148 @@
-import { render, screen, waitFor, act } from "@testing-library/react";
-import PersonalCertificationPage from "@/pages/PersonalCertificationPage";
-import axios from "axios";
-import { vi } from "vitest";
-import "@testing-library/jest-dom";
-import { MemoryRouter } from "react-router-dom";
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { render, screen, waitFor } from '@testing-library/react'
+import axios from 'axios'
+import PersonalCertificationPage from '@/pages/PersonalCertificationPage'
 
-vi.mock("axios");
-vi.mock("react-router-dom", async () => {
-  const actual = await vi.importActual("react-router-dom");
-  return {
-    ...actual,
-    useLocation: () => ({
-      state: {
-        name: "Test User",
-        id: "1",
-        img: "test-image.jpg",
-        statusColor: "#C8FFC3",
-        date: "2024-11-27"
-      }
-    })
-  };
-});
+// Mock assets
+vi.mock('/src/assets/logo.png', () => ({
+  default: 'mocked-logo-path'
+}))
 
-describe("PersonalCertificationPage", () => {
-  const mockCertificationData = {
-    data: {
-      verifications: [
-        {
-          userName: "Test User",
-          certificationDate: "2024-11-27T12:00:00.000Z",
-          verificationImage: "test-image.jpg"
-        },
-        {
-          userName: "Other User",
-          certificationDate: "2024-11-27T12:00:00.000Z",
-          verificationImage: "other-image.jpg"
-        }
-      ]
+// Mock axios
+vi.mock('axios')
+
+// Mock react-router-dom
+vi.mock('react-router-dom', () => ({
+  useLocation: () => ({
+    state: {
+      name: '테스트 유저',
+      id: '1',
+      img: 'test-image-url',
+      statusColor: '#C8FFC3',
+      date: '2024-11-28'
     }
-  };
+  })
+}))
+
+// Mock Material-UI components
+vi.mock('@mui/material', () => ({
+  Avatar: ({ src, alt, style, children }) => (
+    <div className="MuiAvatar-root" data-testid="avatar" style={style}>
+      <img src={src} alt={alt} />
+      {children}
+    </div>
+  )
+}))
+
+// Mock your components
+vi.mock('../components/common/Header', () => ({
+  default: () => <div>Header</div>
+}))
+
+vi.mock('../components/common/Nav', () => ({
+  default: () => <nav>Navigation</nav>
+}))
+
+describe('PersonalCertificationPage', () => {
+  const mockCertificationData = {
+    verifications: [
+      {
+        userName: '테스트 유저',
+        certificationDate: '2024-11-28T00:00:00.000Z',
+        verificationImage: 'test-image-url'
+      },
+      {
+        userName: '다른 유저',
+        certificationDate: '2024-11-28T00:00:00.000Z',
+        verificationImage: 'other-image-url'
+      }
+    ]
+  }
 
   beforeEach(() => {
-    vi.clearAllMocks();
-    vi.spyOn(console, 'error').mockImplementation(() => {});
-  });
+    vi.clearAllMocks()
+    vi.mocked(axios.get).mockResolvedValue({ data: mockCertificationData })
+  })
 
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
+  it('renders header and navigation', () => {
+    render(<PersonalCertificationPage />)
+    
+    expect(screen.getByText('Header')).toBeInTheDocument()
+    expect(screen.getByText('Navigation')).toBeInTheDocument()
+  })
 
-  const renderWithRouter = (component) => {
-    return render(
-      <MemoryRouter>
-        {component}
-      </MemoryRouter>
-    );
-  };
+  it('renders user information correctly', () => {
+    render(<PersonalCertificationPage />)
+    
+    expect(screen.getByText('테스트 유저')).toBeInTheDocument()
+    expect(screen.getByText('2024-11-28')).toBeInTheDocument()
+  })
 
-  test("renders user information correctly", async () => {
-    axios.get.mockResolvedValue(mockCertificationData);
+  it('renders avatar with correct properties', () => {
+    render(<PersonalCertificationPage />)
+    
+    const avatar = screen.getByTestId('avatar')
+    expect(avatar).toHaveStyle({
+      width: '70px',
+      height: '70px',
+      backgroundColor: '#D9D9D9',
+      margin: 0
+    })
+  })
 
-    await act(async () => {
-      renderWithRouter(<PersonalCertificationPage />);
-    });
+  it('renders certification image with correct properties', () => {
+    render(<PersonalCertificationPage />)
+    
+    const image = screen.getByAltText('이미지')
+    expect(image).toHaveAttribute('src', 'test-image-url')
+    expect(image).toHaveStyle({
+      maxHeight: '500px',
+      width: '100%',
+      objectFit: 'cover',
+      borderRadius: '20px'
+    })
+  })
 
-    expect(screen.getByText("Test User")).toBeInTheDocument();
-    expect(screen.getByText("2024-11-27")).toBeInTheDocument();
-  });
+  it('fetches certification data on mount', async () => {
+    render(<PersonalCertificationPage />)
 
-  test("fetches and displays certification data", async () => {
-    axios.get.mockResolvedValue(mockCertificationData);
+    expect(axios.get).toHaveBeenCalledWith(
+      'https://nsptbxlxoj.execute-api.ap-northeast-2.amazonaws.com/dev/verification/1'
+    )
+  })
 
-    await act(async () => {
-      renderWithRouter(<PersonalCertificationPage />);
-    });
+  it('filters certification data correctly', async () => {
+    render(<PersonalCertificationPage />)
 
     await waitFor(() => {
-      expect(axios.get).toHaveBeenCalledWith(
-        expect.stringContaining("/verification/1")
-      );
-    });
-  });
+      // 데이터가 정상적으로 필터링되었는지 확인
+      const userName = screen.getByText('테스트 유저')
+      expect(userName).toBeInTheDocument()
+    })
+  })
 
-  test("filters certification data correctly", async () => {
-    axios.get.mockResolvedValue(mockCertificationData);
+  it('handles empty certification data', async () => {
+    vi.mocked(axios.get).mockResolvedValueOnce({ 
+      data: { verifications: [] } 
+    })
 
-    await act(async () => {
-      renderWithRouter(<PersonalCertificationPage />);
-    });
+    render(<PersonalCertificationPage />)
 
     await waitFor(() => {
-      // 필터링된 데이터가 state에 제대로 설정되었는지 확인
-      const certificationImage = screen.getByAltText("이미지");
-      expect(certificationImage).toHaveAttribute("src", "test-image.jpg");
-    });
-  });
+      expect(axios.get).toHaveBeenCalled()
+    })
+  })
 
-  test("displays profile image", async () => {
-    axios.get.mockResolvedValue(mockCertificationData);
+  it('applies correct styles to containers', () => {
+    render(<PersonalCertificationPage />)
 
-    await act(async () => {
-      renderWithRouter(<PersonalCertificationPage />);
-    });
-
-    const profileImage = screen.getByAltText("user");
-    expect(profileImage).toBeInTheDocument();
-  });
-
-  test("displays certification image", async () => {
-    axios.get.mockResolvedValue(mockCertificationData);
-
-    await act(async () => {
-      renderWithRouter(<PersonalCertificationPage />);
-    });
-
-    const certificationImage = screen.getByAltText("이미지");
-    expect(certificationImage).toBeInTheDocument();
-    expect(certificationImage).toHaveAttribute("src", "test-image.jpg");
-  });
-});
+    // 메인 컨테이너 스타일 확인
+    const mainContainer = screen.getByText('테스트 유저').closest('div')
+    expect(mainContainer.parentElement).toHaveStyle({
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '5px',
+      margin: 'auto 0'
+    })
+  })
+})

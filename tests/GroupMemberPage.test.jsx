@@ -1,154 +1,148 @@
-import { render, screen, waitFor, act } from "@testing-library/react";
-import GroupMemberPage from "@/pages/GroupMemberPage";
-import axios from "axios";
-import { vi } from "vitest";
-import "@testing-library/jest-dom";
-import { MemoryRouter } from "react-router-dom";
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { render, screen, waitFor } from '@testing-library/react'
+import axios from 'axios'
+import GroupMemberPage from '@/pages/GroupMemberPage'
 
-vi.mock("axios");
-vi.mock("react-router-dom", async () => {
-  const actual = await vi.importActual("react-router-dom");
-  return {
-    ...actual,
-    useLocation: () => ({
-      state: {
-        users: {
-          userImage: "test-image.jpg",
-          userName: "Test User",
-          userClass: [{
-            classId: "class123"
-          }]
-        }
+// Mock the dependencies
+vi.mock('axios')
+
+// Mock react-router-dom
+vi.mock('react-router-dom', () => ({
+  useLocation: () => ({
+    state: {
+      users: {
+        userName: '테스트 유저',
+        userImage: 'test-image-url',
+        userClass: [{ classId: 'test-class-id' }]
       }
-    })
-  };
-});
+    },
+    pathname: '',
+    search: '',
+    hash: '',
+    key: ''
+  }),
+  Link: ({ children, to }) => <a href={to}>{children}</a>
+}))
 
-describe("GroupMemberPage", () => {
-  const mockVerificationData = {
-    data: {
-      verifications: [
-        {
-          verificationId: "ver1",
-          verificationImage: "test-verification-image.jpg",
-          yesVote: 3,
-          noVote: 1
-        }
-      ]
+// Mock Material-UI components
+vi.mock('@mui/material', () => ({
+  Avatar: ({ src, alt, style }) => (
+    <div className="MuiAvatar-root MuiAvatar-circular">
+      <img src={src} alt={alt} style={style} />
+    </div>
+  ),
+  Box: ({ children }) => <div>{children}</div>,
+  Tabs: ({ children }) => <div>{children}</div>,
+  Tab: ({ label, component: Component, to, ...props }) => {
+    if (Component) {
+      return <Component to={to}>{label}</Component>
     }
-  };
+    return <div>{label}</div>
+  }
+}))
+
+// Mock your components
+vi.mock('../components/common/Header', () => ({
+  default: () => <div>Header</div>
+}))
+
+vi.mock('../components/common/Nav', () => ({
+  default: () => (
+    <nav>
+      <a href="/main">메인</a>
+      <a href="/certificate">인증</a>
+      <a href="/penalty">벌칙</a>
+      <a href="/group-info">모임관리</a>
+    </nav>
+  )
+}))
+
+describe('GroupMemberPage', () => {
+  const mockUser = {
+    userName: '테스트 유저',
+    userImage: 'test-image-url',
+    userClass: [{ classId: 'test-class-id' }]
+  }
+
+  const mockVerificationResponse = {
+    verifications: [
+      {
+        verificationImage: 'verification-image-url'
+      }
+    ]
+  }
 
   beforeEach(() => {
-    vi.clearAllMocks();
-    vi.spyOn(console, 'error').mockImplementation(() => {});
-  });
+    vi.clearAllMocks()
+    vi.mocked(axios.get).mockResolvedValue({ data: mockVerificationResponse })
+  })
 
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
-  const renderWithRouter = (component) => {
-    return render(
-      <MemoryRouter>
-        {component}
-      </MemoryRouter>
-    );
-  };
-
-  test("renders user information correctly", async () => {
-    axios.get.mockResolvedValue(mockVerificationData);
-
-    await act(async () => {
-      renderWithRouter(<GroupMemberPage />);
-    });
-
-    const userName = screen.getByText("Test User");
-    expect(userName).toBeInTheDocument();
+  it('renders user information correctly', () => {
+    render(<GroupMemberPage />)
     
-    const images = screen.getAllByAltText("user");
-    expect(images[0]).toHaveAttribute("src", "test-image.jpg");
-    expect(images[0]).toHaveStyle({
-      width: "80px",
-      height: "80px"
-    });
-  });
+    expect(screen.getByText('테스트 유저')).toBeInTheDocument()
+    expect(screen.getByAltText('user')).toHaveAttribute('src', 'test-image-url')
+  })
 
-  test("fetches and displays verification data", async () => {
-    axios.get.mockResolvedValue(mockVerificationData);
+  it('renders navigation links', () => {
+    render(<GroupMemberPage />)
+    
+    expect(screen.getByText('메인')).toBeInTheDocument()
+    expect(screen.getByText('인증')).toBeInTheDocument()
+    expect(screen.getByText('벌칙')).toBeInTheDocument()
+    expect(screen.getByText('모임관리')).toBeInTheDocument()
+  })
 
-    await act(async () => {
-      renderWithRouter(<GroupMemberPage />);
-    });
+  it('fetches and displays verification data', async () => {
+    render(<GroupMemberPage />)
+
+    await waitFor(() => {
+      const dates = screen.getAllByText(/2024-11-\d{2}/)
+      expect(dates).toHaveLength(6)
+    })
+
+    expect(axios.get).toHaveBeenCalledTimes(6)
+  })
+
+  it('handles API error gracefully', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.mocked(axios.get).mockRejectedValueOnce(new Error('API Error'))
+
+    render(<GroupMemberPage />)
+
+    await waitFor(() => {
+      expect(consoleSpy).toHaveBeenCalledWith('인증 기록 불러오기 에러:', expect.any(Error))
+    })
+
+    consoleSpy.mockRestore()
+  })
+
+  it('formats dates correctly', async () => {
+    render(<GroupMemberPage />)
+
+    const today = new Date()
+    const formattedToday = today.toISOString().split('T')[0]
 
     await waitFor(() => {
       expect(axios.get).toHaveBeenCalledWith(
-        expect.stringContaining("/verification/class123/"),
+        expect.stringContaining(formattedToday),
         expect.any(Object)
-      );
-    });
-  });
+      )
+    })
+  })
 
-  test("handles API error gracefully", async () => {
-    const error = new Error("Failed to fetch verification data");
-    axios.get.mockRejectedValue(error);
+  it('filters out empty verification data', async () => {
+    const emptyResponse = { data: { verifications: [] } }
+    vi.mocked(axios.get)
+      .mockResolvedValueOnce({ data: mockVerificationResponse })
+      .mockResolvedValueOnce(emptyResponse)
+      .mockResolvedValue({ data: mockVerificationResponse })
 
-    await act(async () => {
-      renderWithRouter(<GroupMemberPage />);
-    });
-
-    await waitFor(() => {
-      expect(console.error).toHaveBeenCalledWith(
-        "인증 기록 불러오기 에러:",
-        error
-      );
-    });
-  });
-
-  test("displays certification status section", async () => {
-    axios.get.mockResolvedValue(mockVerificationData);
-
-    await act(async () => {
-      renderWithRouter(<GroupMemberPage />);
-    });
-
-    expect(screen.getByText("인증 현황")).toBeInTheDocument();
-  });
-
-  test("processes verification data correctly", async () => {
-    const today = new Date();
-    const formattedDate = today.toISOString().split("T")[0];
-    
-    const mockData = {
-      data: {
-        verifications: [{
-          verificationId: "ver1",
-          verificationImage: "test-image.jpg",
-          status: "success"
-        }]
-      }
-    };
-
-    axios.get.mockResolvedValue(mockData);
-
-    await act(async () => {
-      renderWithRouter(<GroupMemberPage />);
-    });
+    render(<GroupMemberPage />)
 
     await waitFor(() => {
-      expect(axios.get).toHaveBeenCalledTimes(6);
-    });
-  });
-
-  test("applies correct layout styles", async () => {
-    axios.get.mockResolvedValue(mockVerificationData);
-
-    await act(async () => {
-      renderWithRouter(<GroupMemberPage />);
-    });
-
-    const mainContainer = screen.getByText("Test User").closest('div[style*="display: flex"]');
-    const containerStyle = window.getComputedStyle(mainContainer);
-    expect(containerStyle.getPropertyValue("display")).toBe("flex");
-    expect(containerStyle.getPropertyValue("width")).toBe("90%");
-  });
-});
+      const dates = screen.getAllByText(/2024-11-\d{2}/)
+      expect(dates.length).toBeLessThan(6)
+    })
+  })
+})

@@ -5,7 +5,7 @@ import DefaultProfile from "../assets/profile_default.png";
 import Nav from "../components/common/Nav";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import Chart from "../components/main/chart";
+import Chart from "../components/main/Chart";
 
 export default function GroupMainPage() {
   const [Profile, setProfile] = useState(DefaultProfile);
@@ -131,6 +131,7 @@ export default function GroupMainPage() {
 
             {/* 통계 부분 */}
             <div style={{ width: "100%" }}>
+            <h3 style={{ marginBottom: "5px" }}>통계치</h3>
               <div
                 style={{
                   backgroundColor: "white",

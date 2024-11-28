@@ -102,7 +102,7 @@ export default function PenaltyPage() {
   const getMessageStyle = (type) => {
     const baseStyle = {
       padding: "10px",
-      borderRadius: "8px",
+      borderRadius: "20px",
       marginBottom: "10px",
     };
 
@@ -110,12 +110,12 @@ export default function PenaltyPage() {
       case "penalty":
         return {
           ...baseStyle,
-          backgroundColor: "#FFE5E5",
+          backgroundColor: "#FFAFB0",
         };
       case "nopenalty":
         return {
           ...baseStyle,
-          backgroundColor: "#E5FFE5",
+          backgroundColor: "#C8FFC3",
           textAlign: "center",
           fontWeight: "bold",
           padding: "20px",
@@ -196,14 +196,15 @@ export default function PenaltyPage() {
           justifyContent: "center",
           alignItems: "center",
           boxSizing: "border-box",
+          margin: "0px 10px"
         }}
       >
         <div
           style={{
             width: "100%",
             maxWidth: "600px",
-            padding: "0 20px",
             boxSizing: "border-box",
+            borderRadius: "20px",
           }}
         >
           {error ? (
@@ -211,7 +212,7 @@ export default function PenaltyPage() {
               data-testid="error-message"
               style={{
                 textAlign: "center",
-                color: "red",
+                color: "#C8FFC3",
                 fontWeight: "bold",
               }}
             >
